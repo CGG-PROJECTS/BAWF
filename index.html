@@ -36,17 +36,20 @@
     }
     .visual-banner {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;          /* Force single row */
       justify-content: center;
-      gap: 24px;
+      gap: 16px;                  /* Smaller gap for tighter row */
       margin: 0 auto 40px auto;
-      max-width: 1400px;
+      overflow-x: auto;           /* Scroll horizontally if too many on narrow screens */
+      padding: 0 10px;
+      max-width: 100%;
     }
     .visual-aid {
-      max-width: 320px;
+      max-width: 280px;           /* A bit smaller than before */
       height: auto;
       border-radius: 12px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      flex-shrink: 0;             /* Prevent shrinking in row */
       display: block;
     }
     .tabs {
@@ -168,12 +171,16 @@
       .container { padding: 24px 16px; }
       h1 { font-size: 2.3rem; }
       iframe { height: 80vh; min-height: 600px; }
-      .visual-banner { gap: 16px; }
+      .visual-banner { gap: 12px; }
     }
     @media (max-width: 768px) {
       .tabs { flex-direction: column; }
       .tab-btn { border-radius: 8px; margin-bottom: 8px; }
-      .visual-banner { flex-direction: column; align-items: center; }
+      .visual-banner {
+        flex-wrap: wrap;           /* Allow wrapping on very small screens */
+        justify-content: center;
+      }
+      .visual-aid { max-width: 240px; }  /* Even smaller on mobile if needed */
     }
   </style>
 </head>
@@ -187,7 +194,7 @@
       </div>
     </header>
 
-    <!-- Image banner at the top, under main info -->
+    <!-- Smaller images in a single horizontal row at the top -->
     <div class="visual-banner">
       <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" 
            alt="Word cloud of common English prefixes" 
@@ -201,16 +208,16 @@
            alt="Word matrix showing family relationships" 
            class="visual-aid">
 
-      <img src="https://thumbs.dreamstime.com/b/education-books-students-reading-library-group-learning-development-growth-storytelling-kids-happy-children-talking-267572039.jpg" 
-           alt="Happy children reading books together in a group" 
+      <img src="https://www.the74million.org/wp-content/uploads/2019/05/Classroom-library.jpg" 
+           alt="Group of children reading books in a circle on the floor" 
            class="visual-aid">
 
-      <img src="https://sno-islefoundation.org/wp-content/uploads/2023/06/Discovery-Elementary-1.jpg" 
-           alt="Kids excitedly sharing and reading books at a table" 
+      <img src="https://as1.ftcdn.net/jpg/03/08/88/54/1000_F_308885463_Y68hiTN0ZpcqBOLPARkMawFvhFut3N7S.jpg" 
+           alt="Teacher and young children reading a colorful book together" 
            class="visual-aid">
 
-      <img src="https://sarahsnippets.com/wp-content/uploads/2023/12/Screenshot-2025-03-13-at-7.21.07%E2%80%AFAM.png" 
-           alt="Colorful morphology poster explaining prefixes, bases, and suffixes" 
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6_TLO4qHmN4sfx0hFWLJctOFPNZ824WBBrI95Qkh2U-2Z0BtwsRFf_3BVAysdW-s1rXcqfnqwTNTbozzGh2yZTCbGMDPNX_gjXBQI7PyAAEF6pofA-rxF7ImPP5vmlu_vlOhpC1WfJ4Ce/w1200-h630-p-k-no-nu/Prefixes+Posters.png" 
+           alt="Fun classroom posters for teaching prefixes and suffixes" 
            class="visual-aid">
     </div>
 
