@@ -20,7 +20,7 @@
     }
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
     h1 {
       margin: 0 0 12px 0;
@@ -32,7 +32,22 @@
       font-size: 1.25rem;
       color: #4b5563;
       max-width: 900px;
-      margin: 0 auto;
+      margin: 0 auto 24px auto;
+    }
+    .visual-banner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      margin: 0 auto 40px auto;
+      max-width: 1400px;
+    }
+    .visual-aid {
+      max-width: 320px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      display: block;
     }
     .tabs {
       display: flex;
@@ -142,27 +157,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.12);
       background: white;
     }
-    .visual-aid {
-      max-width: 320px;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-      margin: 20px auto;
-      display: block;
-    }
-    .visual-group {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 24px;
-      margin: 32px 0;
-    }
-    .visual-group img {
-      flex: 1 1 300px;
-    }
-    .float-left { float: left; margin: 0 24px 16px 0; }
-    .float-right { float: right; margin: 0 0 16px 24px; }
-    .clear { clear: both; }
     footer {
       margin-top: 48px;
       text-align: center;
@@ -174,11 +168,12 @@
       .container { padding: 24px 16px; }
       h1 { font-size: 2.3rem; }
       iframe { height: 80vh; min-height: 600px; }
+      .visual-banner { gap: 16px; }
     }
     @media (max-width: 768px) {
       .tabs { flex-direction: column; }
       .tab-btn { border-radius: 8px; margin-bottom: 8px; }
-      .visual-group { flex-direction: column; }
+      .visual-banner { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
@@ -192,10 +187,32 @@
       </div>
     </header>
 
-    <!-- Floating image near top for nice distribution -->
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" 
-         alt="Word cloud of common English prefixes" 
-         class="visual-aid float-left">
+    <!-- Image banner at the top, under main info -->
+    <div class="visual-banner">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" 
+           alt="Word cloud of common English prefixes" 
+           class="visual-aid">
+
+      <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png" 
+           alt="Children engaged in fun vocabulary and word learning" 
+           class="visual-aid">
+
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Sign_word_matrix.png/640px-Sign_word_matrix.png" 
+           alt="Word matrix showing family relationships" 
+           class="visual-aid">
+
+      <img src="https://thumbs.dreamstime.com/b/education-books-students-reading-library-group-learning-development-growth-storytelling-kids-happy-children-talking-267572039.jpg" 
+           alt="Happy children reading books together in a group" 
+           class="visual-aid">
+
+      <img src="https://sno-islefoundation.org/wp-content/uploads/2023/06/Discovery-Elementary-1.jpg" 
+           alt="Kids excitedly sharing and reading books at a table" 
+           class="visual-aid">
+
+      <img src="https://sarahsnippets.com/wp-content/uploads/2023/12/Screenshot-2025-03-13-at-7.21.07%E2%80%AFAM.png" 
+           alt="Colorful morphology poster explaining prefixes, bases, and suffixes" 
+           class="visual-aid">
+    </div>
 
     <div class="info-card">
       <h3>About this Database</h3>
@@ -206,19 +223,8 @@
         <li>Download individual Excel files for offline use, advanced filtering, or editing</li>
       </ul>
       <p style="margin-top: 16px; font-style: italic;">
-        Visual aids below show children enjoying reading and word learning activities — inspiring morphology exploration!
+        Inspired by joyful word learning and reading — dive in and explore!
       </p>
-    </div>
-
-    <!-- Grouped images in center -->
-    <div class="visual-group">
-      <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png" 
-           alt="Children engaged in fun vocabulary and word learning" 
-           class="visual-aid">
-
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Sign_word_matrix.png/640px-Sign_word_matrix.png" 
-           alt="Word matrix showing family relationships" 
-           class="visual-aid">
     </div>
 
     <div class="loading-note">
@@ -257,17 +263,6 @@
       </div>
       <iframe loading="lazy" src="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?AllowTyping=True&ActiveCell='Definitions%20and%20Etymology'!C8&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
     </div>
-
-    <!-- Additional floating images near bottom for balance -->
-    <img src="https://www.95percentgroup.com/wp-content/uploads/2025/06/iStock-2209704639.jpg" 
-         alt="Three happy girls reading a book together on the floor" 
-         class="visual-aid float-right">
-
-    <img src="http://www.bjoremspeech.com/cdn/shop/articles/children_enjoying_the_fun_benefits_of_reading_books_together_by_reading_in_class.jpg?v=1771571558" 
-         alt="Group of children sitting in a circle enjoying story time" 
-         class="visual-aid float-left">
-
-    <div class="clear"></div>
 
     <footer>
       <p>Hosted via Microsoft Excel Online • Maintained by Clarence Green, Ph.D. • Images from open educational sources</p>
