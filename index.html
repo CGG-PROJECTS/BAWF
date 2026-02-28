@@ -17,11 +17,22 @@
       max-width: 1800px;
       margin: 32px auto;
       padding: 32px 24px;
-      border: 1px solid #e2e8f0;          /* subtle light border */
+      background: white;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06),
-                  0 4px 12px rgba(0, 0, 0, 0.04); /* soft shadow lift */
-      background: white;                   /* clean white inner content */
+                  0 4px 12px rgba(0, 0, 0, 0.04);
+
+      /* Subtle patterned border using border-image with repeating gradient */
+      border: 12px solid transparent; /* thicker for pattern visibility */
+      border-image: repeating-linear-gradient(
+        45deg,
+        #e2e8f0,
+        #e2e8f0 10px,
+        transparent 10px,
+        transparent 20px
+      ) 12; /* 12 = border width slice */
+      border-image-slice: 12; /* matches border width */
+      border-image-repeat: round; /* smooth repeat around corners */
     }
     header {
       text-align: center;
