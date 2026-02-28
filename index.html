@@ -34,33 +34,69 @@
       max-width: 900px;
       margin: 0 auto;
     }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 32px 0;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: #e5e7eb;
+      color: #374151;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #1d4ed8;
+      color: white;
+    }
+    .tab-btn:hover {
+      background: #d1d5db;
+    }
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .download-section {
+      text-align: center;
+      margin: 24px 0;
+    }
     .download-btn {
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      padding: 16px 36px;
-      font-size: 1.25rem;
+      padding: 14px 32px;
+      font-size: 1.1rem;
       font-weight: 600;
       background: #1d4ed8;
       color: white;
       text-decoration: none;
-      border-radius: 12px;
+      border-radius: 10px;
       box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
-      transition: all 0.2s ease;
-      margin: 28px auto;
-      border: none;
-      cursor: pointer;
+      transition: all 0.2s;
+      margin: 12px;
     }
     .download-btn:hover {
       background: #1e40af;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(29, 78, 216, 0.35);
     }
     .info-card {
       background: white;
       border-radius: 12px;
       padding: 28px 32px;
-      margin: 32px 0 40px 0;
+      margin: 32px 0;
       box-shadow: 0 4px 16px rgba(0,0,0,0.06);
       border-left: 5px solid #3b82f6;
     }
@@ -88,14 +124,30 @@
       color: #3b82f6;
       font-weight: bold;
     }
+    .loading-note {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #6b7280;
+      margin: 20px 0;
+      padding: 16px;
+      background: #f0f4f8;
+      border-radius: 8px;
+    }
     iframe {
       width: 100%;
-      height: 92vh;
-      min-height: 800px;
+      height: 85vh;
+      min-height: 700px;
       border: none;
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.12);
       background: white;
+    }
+    .visual-aid {
+      max-width: 400px;
+      margin: 24px auto;
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     footer {
       margin-top: 48px;
@@ -107,12 +159,11 @@
     @media (max-width: 1024px) {
       .container { padding: 24px 16px; }
       h1 { font-size: 2.3rem; }
-      iframe { height: 85vh; min-height: 600px; }
+      iframe { height: 80vh; min-height: 600px; }
     }
     @media (max-width: 768px) {
-      h1 { font-size: 2rem; }
-      .download-btn { font-size: 1.1rem; padding: 14px 28px; }
-      .info-card { padding: 20px; }
+      .tabs { flex-direction: column; }
+      .tab-btn { border-radius: 8px; margin-bottom: 8px; }
     }
   </style>
 </head>
@@ -122,62 +173,85 @@
     <header>
       <h1>BAWF Morphological Database</h1>
       <div class="tagline">
-        Morphology, roots, affixes and frequency information — interactive web view (draft)
+        Morphology, roots, affixes, compounds, and etymology — interactive views (draft)
       </div>
     </header>
 
-    <div style="text-align: center;">
-      <a href="https://1drv.ms/x/c/7dd10ea681993770/IQCEd6yXKtOLSJJGtwlNJBBtAZj6Rd6dNxArPNpsqUIuoFY?e=dMPGiC&download=1"
-         class="download-btn"
-         target="_blank">
-        <span>↓ Download Full Excel File</span>
-      </a>
-      <div style="margin-top: 8px; color: #6b7280; font-size: 0.95rem;">
-        Recommended for offline use, advanced filtering, or faster access
-      </div>
-    </div>
-
     <div class="info-card">
-      <h3>How to use this interactive view</h3>
+      <h3>About this Database</h3>
       <ul>
-        <li><strong>Sort columns</strong> — click any column header (click again to reverse order)</li>
-        <li><strong>Filter / search</strong> — look for small search or filter icons in the header row (if visible)</li>
-        <li><strong>Scroll & navigate</strong> — use mouse wheel, trackpad, or touch gestures</li>
-        <li><strong>Zoom in/out</strong> — use browser zoom (Ctrl + / Ctrl –) if text is small</li>
-        <li><strong>Download full file</strong> — use the large blue button above or the download icon in the top-right corner of the table</li>
+        <li>Explore English word families, compound words, and definitions/etymologies</li>
+        <li>Use tabs below to switch between sections</li>
+        <li>Each section loads independently for faster performance</li>
+        <li>Download individual Excel files for offline use, advanced filtering, or editing</li>
       </ul>
       <p style="margin-top: 16px; font-style: italic;">
-        Note: This is a web-based view hosted via Microsoft Excel Online.
-        For offline work, advanced editing, or better performance, download the full file.
+        Visual aids below illustrate key morphology concepts (Creative Commons licensed where noted).
       </p>
     </div>
 
-    <!-- Loading placeholder + lazy iframe -->
-    <div id="loading-placeholder" style="text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); min-height: 500px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-      <div style="font-size: 1.3rem; color: #4b5563; margin-bottom: 16px;">
-        Loading interactive database...
-      </div>
-      <div style="font-size: 1rem; color: #6b7280; max-width: 600px;">
-        This may take 10–30 seconds (or longer on slower connections). Thank you for your patience!<br>
-        For fastest access, use the Download button above.
-      </div>
+    <!-- Example visual aids – replace src with direct image URLs if you upload them to GitHub or find better CC ones -->
+    <img src="https://ecampusontario.pressbooks.pub/app/uploads/sites/essentialsoflinguistics2/wp-content/uploads/sites/essentialsoflinguistics2/2022/05/governmental-tree.png" alt="Morphological tree diagram example" class="visual-aid">
+    <p style="text-align: center; color: #6b7280; font-size: 0.95rem;">Example: Morphological tree for "governmental" (from Essentials of Linguistics, CC BY-NC-SA)</p>
+
+    <!-- Add more if you like, e.g. a word family matrix or compound breakdown -->
+
+    <div class="loading-note">
+      <strong>Note:</strong> Interactive tables may take 5–20 seconds to load (depending on connection). Use download buttons for instant access!
     </div>
 
-    <iframe
-      id="excel-iframe"
-      loading="lazy"
-      src="https://1drv.ms/x/c/7dd10ea681993770/IQSEd6yXKtOLSJJGtwlNJBBtAfLfdfoHoBSPLuIyxHfXhaQ?AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True"
-      frameborder="0"
-      scrolling="yes"
-      allowfullscreen
-      onload="document.getElementById('loading-placeholder').style.display='none'; this.style.display='block';"
-      style="display: none; width: 100%; height: 92vh; min-height: 800px; border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); background: white;">
-    </iframe>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('word-families')">Word Families</button>
+      <button class="tab-btn" onclick="openTab('compounds')">Compound Words</button>
+      <button class="tab-btn" onclick="openTab('definitions')">Definitions & Etymologies</button>
+    </div>
+
+    <div id="word-families" class="tab-content active">
+      <div class="download-section">
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQCEd6yXKtOLSJJGtwlNJBBtAZj6Rd6dNxArPNpsqUIuoFY?e=dMPGiC&download=1" class="download-btn" target="_blank">
+          ↓ Download Word Families Excel
+        </a>
+      </div>
+      <iframe loading="lazy" src="https://1drv.ms/x/c/7dd10ea681993770/IQSEd6yXKtOLSJJGtwlNJBBtAfLfdfoHoBSPLuIyxHfXhaQ?AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div id="compounds" class="tab-content">
+      <div class="download-section">
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQDe3efWBUXHQbiKq8zKthRMAbqa97EYlaa2OZFHGCL4d-8?e=n0ZQWv&download=1" class="download-btn" target="_blank">
+          ↓ Download Compound Words Excel
+        </a>
+      </div>
+      <iframe loading="lazy" src="https://1drv.ms/x/c/7dd10ea681993770/IQTe3efWBUXHQbiKq8zKthRMAVj6cn97lRgJyPJbEMRJ8YA?AllowTyping=True&ActiveCell='Compounds'!A5&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div id="definitions" class="tab-content">
+      <div class="download-section">
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQAsbLYK8J8WQqwzSjZDdcQOAUsAUyuOmg3DfHR4Cs_OchE?e=3EzZ0k&download=1" class="download-btn" target="_blank">
+          ↓ Download Definitions & Etymologies Excel
+        </a>
+      </div>
+      <iframe loading="lazy" src="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?AllowTyping=True&ActiveCell='Definitions%20and%20Etymology'!C8&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
+    </div>
 
     <footer>
-      <p>Hosted via Microsoft Excel Online • Maintained by Clarence Green, Ph.D.</p>
+      <p>Hosted via Microsoft Excel Online • Maintained by Clarence Green, Ph.D. • Images used under Creative Commons licenses where applicable</p>
     </footer>
   </div>
+
+  <script>
+    function openTab(tabName) {
+      var contents = document.getElementsByClassName("tab-content");
+      for (var i = 0; i < contents.length; i++) {
+        contents[i].classList.remove("active");
+      }
+      var buttons = document.getElementsByClassName("tab-btn");
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove("active");
+      }
+      document.getElementById(tabName).classList.add("active");
+      event.currentTarget.classList.add("active");
+    }
+  </script>
 
 </body>
 </html>
