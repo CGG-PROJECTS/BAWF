@@ -4,12 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BAWF Morphological Database</title>
+  
+  <!-- WordCloud2.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2/1.2.3/wordcloud2.min.js"></script>
+  
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(to bottom, #fdfdfd, #f8f8f8); /* warm off-white */
+      background: linear-gradient(to bottom, #fdfdfd, #f8f8f8);
       color: #111827;
       min-height: 100vh;
     }
@@ -21,18 +25,16 @@
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06),
                   0 4px 12px rgba(0, 0, 0, 0.04);
-
-      /* Subtle patterned border using border-image with repeating gradient */
-      border: 12px solid transparent; /* thicker for pattern visibility */
+      border: 12px solid transparent;
       border-image: repeating-linear-gradient(
         45deg,
         #e2e8f0,
         #e2e8f0 10px,
         transparent 10px,
         transparent 20px
-      ) 12; /* 12 = border width slice */
-      border-image-slice: 12; /* matches border width */
-      border-image-repeat: round; /* smooth repeat around corners */
+      ) 12;
+      border-image-slice: 12;
+      border-image-repeat: round;
     }
     header {
       text-align: center;
@@ -183,6 +185,49 @@
       font-size: 0.95rem;
       padding: 20px 0;
     }
+    /* Word Cloud specific styles */
+    #wordcloud-input-area {
+      text-align: center;
+      margin: 32px 0;
+    }
+    #wordInput {
+      width: 90%;
+      max-width: 900px;
+      height: 160px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 1rem;
+      border: 2px solid #d1d5db;
+      border-radius: 10px;
+      resize: vertical;
+      background: #f9fafb;
+    }
+    #generateBtn {
+      margin-top: 16px;
+      padding: 14px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: #1d4ed8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+      transition: all 0.2s;
+    }
+    #generateBtn:hover {
+      background: #1e40af;
+      transform: translateY(-2px);
+    }
+    #wordCanvas {
+      display: block;
+      margin: 32px auto;
+      max-width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      background: white;
+    }
     @media (max-width: 1024px) {
       .container { padding: 24px 16px; margin: 16px; }
       h1 { font-size: 2.3rem; }
@@ -197,11 +242,11 @@
         justify-content: center;
       }
       .visual-aid { max-width: 240px; }
+      #wordInput { width: 95%; }
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <header>
       <h1>BAWF Morphological Database</h1>
@@ -210,30 +255,24 @@
       </div>
     </header>
 
-    <!-- Single horizontal row of smaller images -->
     <div class="visual-banner">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" 
-           alt="Word cloud of common English prefixes" 
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png"
+           alt="Word cloud of common English prefixes"
            class="visual-aid">
-
-      <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png" 
-           alt="Children engaged in fun vocabulary and word learning" 
+      <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png"
+           alt="Children engaged in fun vocabulary and word learning"
            class="visual-aid">
-
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Sign_word_matrix.png/640px-Sign_word_matrix.png" 
-           alt="Word matrix showing family relationships" 
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Sign_word_matrix.png/640px-Sign_word_matrix.png"
+           alt="Word matrix showing family relationships"
            class="visual-aid">
-
-      <img src="https://www.the74million.org/wp-content/uploads/2019/05/Classroom-library.jpg" 
-           alt="Group of children reading books in a circle on the floor" 
+      <img src="https://www.the74million.org/wp-content/uploads/2019/05/Classroom-library.jpg"
+           alt="Group of children reading books in a circle on the floor"
            class="visual-aid">
-
-      <img src="https://as1.ftcdn.net/jpg/03/08/88/54/1000_F_308885463_Y68hiTN0ZpcqBOLPARkMawFvhFut3N7S.jpg" 
-           alt="Teacher and young children reading a colorful book together" 
+      <img src="https://as1.ftcdn.net/jpg/03/08/88/54/1000_F_308885463_Y68hiTN0ZpcqBOLPARkMawFvhFut3N7S.jpg"
+           alt="Teacher and young children reading a colorful book together"
            class="visual-aid">
-
-      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6_TLO4qHmN4sfx0hFWLJctOFPNZ824WBBrI95Qkh2U-2Z0BtwsRFf_3BVAysdW-s1rXcqfnqwTNTbozzGh2yZTCbGMDPNX_gjXBQI7PyAAEF6pofA-rxF7ImPP5vmlu_vlOhpC1WfJ4Ce/w1200-h630-p-k-no-nu/Prefixes+Posters.png" 
-           alt="Fun classroom posters for teaching prefixes and suffixes" 
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6_TLO4qHmN4sfx0hFWLJctOFPNZ824WBBrI95Qkh2U-2Z0BtwsRFf_3BVAysdW-s1rXcqfnqwTNTbozzGh2yZTCbGMDPNX_gjXBQI7PyAAEF6pofA-rxF7ImPP5vmlu_vlOhpC1WfJ4Ce/w1200-h630-p-k-no-nu/Prefixes+Posters.png"
+           alt="Fun classroom posters for teaching prefixes and suffixes"
            class="visual-aid">
     </div>
 
@@ -244,6 +283,7 @@
         <li>Use tabs below to switch between sections</li>
         <li>Each section loads independently for faster performance</li>
         <li>Download individual Excel files for offline use, advanced filtering, or editing</li>
+        <li>Now with interactive Word Cloud generator — paste words + frequencies!</li>
       </ul>
       <p style="margin-top: 16px; font-style: italic;">
         Inspired by joyful word learning and reading — dive in and explore!
@@ -258,33 +298,74 @@
       <button class="tab-btn active" onclick="openTab('word-families')">Word Families</button>
       <button class="tab-btn" onclick="openTab('compounds')">Compound Words</button>
       <button class="tab-btn" onclick="openTab('definitions')">Definitions & Etymologies</button>
+      <button class="tab-btn" onclick="openTab('wordcloud')">Word Cloud Generator</button>
     </div>
 
     <div id="word-families" class="tab-content active">
       <div class="download-section">
-        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQCEd6yXKtOLSJJGtwlNJBBtAZj6Rd6dNxArPNpsqUIuoFY?e=dMPGiC&download=1" class="download-btn" target="_blank">
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQCEd6yXKtOLSJJGtwlNJBBtAZj6Rd6dNxArPNpsqUIuoFY?e=dMPGiC&download=1" 
+           class="download-btn" target="_blank">
           ↓ Download Word Families Excel
         </a>
       </div>
-      <iframe loading="lazy" src="https://1drv.ms/x/c/7dd10ea681993770/IQSEd6yXKtOLSJJGtwlNJBBtAfLfdfoHoBSPLuIyxHfXhaQ?AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
+      <iframe loading="lazy" 
+              src="https://1drv.ms/x/c/7dd10ea681993770/IQSEd6yXKtOLSJJGtwlNJBBtAfLfdfoHoBSPLuIyxHfXhaQ?AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
+              frameborder="0" allowfullscreen></iframe>
     </div>
 
     <div id="compounds" class="tab-content">
       <div class="download-section">
-        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQDe3efWBUXHQbiKq8zKthRMAbqa97EYlaa2OZFHGCL4d-8?e=n0ZQWv&download=1" class="download-btn" target="_blank">
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQDe3efWBUXHQbiKq8zKthRMAbqa97EYlaa2OZFHGCL4d-8?e=n0ZQWv&download=1" 
+           class="download-btn" target="_blank">
           ↓ Download Compound Words Excel
         </a>
       </div>
-      <iframe loading="lazy" src="https://1drv.ms/x/c/7dd10ea681993770/IQTe3efWBUXHQbiKq8zKthRMAVj6cn97lRgJyPJbEMRJ8YA?AllowTyping=True&ActiveCell='Compounds'!A5&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
+      <iframe loading="lazy" 
+              src="https://1drv.ms/x/c/7dd10ea681993770/IQTe3efWBUXHQbiKq8zKthRMAVj6cn97lRgJyPJbEMRJ8YA?AllowTyping=True&ActiveCell='Compounds'!A5&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
+              frameborder="0" allowfullscreen></iframe>
     </div>
 
     <div id="definitions" class="tab-content">
       <div class="download-section">
-        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQAsbLYK8J8WQqwzSjZDdcQOAUsAUyuOmg3DfHR4Cs_OchE?e=3EzZ0k&download=1" class="download-btn" target="_blank">
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQAsbLYK8J8WQqwzSjZDdcQOAUsAUyuOmg3DfHR4Cs_OchE?e=3EzZ0k&download=1" 
+           class="download-btn" target="_blank">
           ↓ Download Definitions & Etymologies Excel
         </a>
       </div>
-      <iframe loading="lazy" src="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?AllowTyping=True&ActiveCell='Definitions%20and%20Etymology'!C8&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
+      <iframe loading="lazy" 
+              src="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?AllowTyping=True&ActiveCell='Definitions%20and%20Etymology'!C8&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
+              frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div id="wordcloud" class="tab-content">
+      <div class="info-card">
+        <h3>Word Cloud Generator</h3>
+        <p>Copy two columns from any Excel sheet (e.g. Word | Frequency or Lemma | Count), paste them below, and click Generate.</p>
+        <p><strong>Accepted formats (one per line):</strong></p>
+        <ul style="font-size: 1rem; margin-left: 20px;">
+          <li>analysis 120</li>
+          <li>morphology	95</li>
+          <li>prefix,suffix,78</li>
+        </ul>
+        <p style="margin-top: 12px; color: #4b5563;">
+          Words with higher frequency appear larger. You can paste hundreds of rows — it works instantly in your browser.
+        </p>
+      </div>
+
+      <div id="wordcloud-input-area">
+        <textarea id="wordInput" placeholder="Paste your word-frequency data here...
+Example:
+analysis 120
+morphology 95
+prefix 78
+suffix 65
+compound 42
+root 38
+affix 31"></textarea>
+        <button id="generateBtn" onclick="generateWordCloud()">Generate Word Cloud</button>
+      </div>
+
+      <canvas id="wordCanvas" width="1000" height="700"></canvas>
     </div>
 
     <footer>
@@ -305,7 +386,64 @@
       document.getElementById(tabName).classList.add("active");
       event.currentTarget.classList.add("active");
     }
-  </script>
 
+    function generateWordCloud() {
+      const input = document.getElementById('wordInput').value.trim();
+      if (!input) {
+        alert("Please paste some word-frequency data first!");
+        return;
+      }
+
+      const list = [];
+      const lines = input.split('\n');
+      lines.forEach(line => {
+        const cleaned = line.trim();
+        if (!cleaned) return;
+
+        // Split on tabs, multiple spaces, or comma
+        const parts = cleaned.split(/\t|\s{2,}|,/);
+        if (parts.length >= 2) {
+          const word = parts[0].trim();
+          const freqStr = parts[1].trim();
+          const freq = parseFloat(freqStr);
+          if (word && !isNaN(freq) && freq > 0) {
+            list.push([word, freq]);
+          }
+        }
+      });
+
+      if (list.length === 0) {
+        alert("No valid word-frequency pairs found.\n\nTry format like:\nanalysis 120\nmorphology 95");
+        return;
+      }
+
+      // Sort by frequency descending (usually gives better clouds)
+      list.sort((a, b) => b[1] - a[1]);
+
+      const canvas = document.getElementById('wordCanvas');
+
+      // Clear any previous cloud
+      if (window.currentWordCloud) {
+        WordCloud(canvas, { list: [] });
+      }
+
+      WordCloud(canvas, {
+        list: list,
+        gridSize: 12,
+        weightFactor: 18,
+        fontFamily: 'Segoe UI, Arial, Helvetica, sans-serif',
+        color: 'random-dark',
+        rotateRatio: 0.4,
+        rotationSteps: 2,
+        backgroundColor: '#ffffff',
+        minSize: 10,
+        drawOutOfBound: false,
+        shrinkToFit: true
+      });
+
+      // Optional: scroll to canvas after generation
+      canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
 </body>
 </html>
