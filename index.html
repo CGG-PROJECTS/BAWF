@@ -1,72 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BAWF Morphological Database</title>
- 
-  <!-- WordCloud2.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2/1.2.3/wordcloud2.min.js" defer></script>
- 
-  <style>
-    /* ... (keep all your existing styles from the previous version) ... */
-    #wordInput {
-      width: 90%; max-width: 900px; height: 220px;
-      padding: 16px; font-family: monospace; font-size: 1rem;
-      border: 2px solid #d1d5db; border-radius: 10px; resize: vertical;
-      background: #f9fafb;
-    }
-    #generateBtn {
-      margin-top: 16px; padding: 14px 40px; font-size: 1.1rem; font-weight: 600;
-      background: #1d4ed8; color: white; border: none; border-radius: 10px; cursor: pointer;
-    }
-    #wordCanvas {
-      display: block; margin: 32px auto; max-width: 100%; border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08); background: white;
-    }
-  </style>
-</head>
-<body>
-  <!-- ... (keep your header, loading note, key button, visual banner, tabs, and the other three tabs exactly as before) ... -->
-
-  <!-- ==================== WORD CLOUD TAB (Fixed) ==================== -->
-  <div id="wordcloud" class="tab-content">
-    <div style="max-width:900px; margin:0 auto; text-align:center;">
-      <p><strong>Instructions:</strong> Paste two columns (Word + Frequency) below and click the button.</p>
-      <textarea id="wordInput" placeholder="Paste your data here...&#10;Example:&#10;attract 4.27&#10;attracted 4.24&#10;extract 4.04"></textarea>
-      <br><br>
-      <button id="generateBtn" onclick="generateWordCloud()">Generate Word Cloud</button>
-      <p id="cloudStatus" style="margin-top:10px; color:#6b7280; font-size:0.95rem;"></p>
-    </div>
-    <canvas id="wordCanvas" width="1000" height="700"></canvas>
-  </div>
-
-  <!-- ... rest of your footer ... -->
-
   <script>
-    // Your existing openTab(), showColumnKey(), closeModal() functions stay the same
+    function openTab(tabName) { /* keep your existing openTab function */ }
 
+    function showColumnKey() { /* keep your existing modal functions */ }
+    function closeModal() { /* ... */ }
+
+    // ==================== FIXED WORD CLOUD FUNCTION ====================
     function generateWordCloud() {
-      const status = document.getElementById('cloudStatus');
-      status.textContent = "Generating...";
+      const statusEl = document.getElementById('cloudStatus');
+      statusEl.style.color = '#6b7280';
+      statusEl.textContent = 'Processing data...';
 
-      const input = document.getElementById('wordInput').value.trim();
+      let input = document.getElementById('wordInput').value.trim();
       if (!input) {
-        status.textContent = "Please paste some data first!";
+        statusEl.style.color = 'red';
+        statusEl.textContent = 'Please paste some data first!';
         return;
       }
 
       const list = [];
-      const lines = input.split('\n');
 
-      lines.forEach(line => {
-        const cleaned = line.trim();
+      input.split('\n').forEach(line => {
+        let cleaned = line.trim();
         if (!cleaned) return;
-        // Split on tab, multiple spaces, or comma
-        const parts = cleaned.split(/\t|\s{2,}|,/).map(p => p.trim());
+
+        // Improved splitting: handles tabs, multiple spaces, commas, or even Excel paste
+        let parts = cleaned.split(/\t+|\s{2,}|,+/).map(p => p.trim()).filter(p => p !== '');
+
         if (parts.length >= 2) {
           const word = parts[0];
-          const freq = parseFloat(parts[1]);
+          // Try to find a number in the remaining parts (in case there are extra columns)
+          let freqStr = parts.find(p => !isNaN(parseFloat(p)));
+          const freq = parseFloat(freqStr);
+
           if (word && !isNaN(freq) && freq > 0) {
             list.push([word, freq]);
           }
@@ -74,74 +39,67 @@
       });
 
       if (list.length === 0) {
-        status.textContent = "No valid word-frequency pairs found. Check your format.";
+        statusEl.style.color = 'red';
+        statusEl.textContent = 'Could not find valid word + frequency pairs. Try pasting just two columns.';
         return;
       }
 
-      // Sort by frequency (largest first)
+      // Sort by frequency descending
       list.sort((a, b) => b[1] - a[1]);
 
       const canvas = document.getElementById('wordCanvas');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Small delay to ensure library is loaded
+      statusEl.textContent = 'Generating cloud...';
+
+      // Small delay + check if library loaded
       setTimeout(() => {
-        if (typeof WordCloud === "function") {
-          WordCloud(canvas, {
-            list: list,
-            gridSize: 12,
-            weightFactor: 22,
-            fontFamily: 'Segoe UI, Arial, sans-serif',
-            color: 'random-dark',
-            rotateRatio: 0.3,
-            backgroundColor: '#ffffff',
-            minSize: 12,
-            shrinkToFit: true
-          });
-          status.textContent = "Word cloud generated!";
-        } else {
-          status.textContent = "Word cloud library not loaded yet. Please refresh the page and try again.";
+        if (typeof WordCloud !== 'function') {
+          statusEl.style.color = 'red';
+          statusEl.textContent = 'Word cloud library failed to load. Please refresh the page.';
+          return;
         }
-      }, 300);
+
+        WordCloud(canvas, {
+          list: list,
+          gridSize: 10,
+          weightFactor: 24,
+          fontFamily: 'Segoe UI, Arial, sans-serif',
+          color: 'random-dark',
+          rotateRatio: 0.25,
+          backgroundColor: '#ffffff',
+          minSize: 10,
+          shrinkToFit: true,
+          drawOutOfBound: false
+        });
+
+        statusEl.style.color = '#15803d';
+        statusEl.textContent = `Success! ${list.length} words generated.`;
+      }, 100);
     }
 
-    // Optional: Auto-fill a nice example when user opens the Word Cloud tab
+    // Auto-fill example when opening the tab
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         if (this.textContent.includes('Word Cloud')) {
           setTimeout(() => {
-            const textarea = document.getElementById('wordInput');
-            if (!textarea.value.trim()) {
-              textarea.value = `attract 4.27
-attracted 4.24
-extract 4.04
-attraction 4.04
-distracted 3.99
-extracted 3.93
-extraction 3.90
-distraction 3.88
-contractors 3.86
-attracting 3.81
-contracted 3.78
-traction 3.78
-contractor 3.76
-attractions 3.75
-distract 3.71
-contractual 3.70
-tract 3.69
-contracting 3.62
-attracts 3.62
-tractor 3.62
-contraction 3.58
-abstraction 3.56
-extracts 3.52
-distracting 3.51`;
+            const ta = document.getElementById('wordInput');
+            if (!ta.value.trim()) {
+              ta.value = `distractor 2.56
+extractions 2.54
+subcontractor 2.49
+extractor 2.48
+abstracting 2.47
+abstractly 2.42
+contractile 2.41
+detracted 2.39
+attractor 2.35
+retracting 2.32
+subcontracted 2.30`;
             }
-          }, 400);
+          }, 300);
         }
       });
     });
   </script>
-</body>
-</html>
