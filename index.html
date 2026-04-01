@@ -1,17 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BAWF Morphological Database</title>
+
+  <!-- WordCloud2.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2/1.2.3/wordcloud2.min.js" defer></script>
+
+  <style>
+    /* Keep all your other existing styles */
+    #wordInput {
+      width: 90%;
+      max-width: 900px;
+      height: 220px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 1rem;
+      border: 2px solid #d1d5db;
+      border-radius: 10px;
+      resize: vertical;
+      background: #f9fafb;
+    }
+
+    #generateBtn {
+      margin-top: 16px;
+      padding: 14px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: #1d4ed8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #wordCanvas {
+      display: block;
+      margin: 32px auto;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Keep your header/loading note/key button/banner/tabs/other tabs exactly as before -->
+
+  <!-- Example tab button (only if you need one for testing auto-fill) -->
+  <!-- <button class="tab-btn" onclick="openTab('wordcloud')">Word Cloud</button> -->
+
+  <!-- ==================== WORD CLOUD TAB ==================== -->
+  <div id="wordcloud" class="tab-content">
+    <div style="max-width:900px; margin:0 auto; text-align:center;">
+      <p><strong>Instructions:</strong> Paste two columns (Word + Frequency) below and click the button.</p>
+      <textarea id="wordInput" placeholder="Paste your data here...&#10;Example:&#10;attract 4.27&#10;attracted 4.24&#10;extract 4.04"></textarea>
+      <br><br>
+      <button id="generateBtn" onclick="generateWordCloud()">Generate Word Cloud</button>
+      <p id="cloudStatus" style="margin-top:10px; color:#6b7280; font-size:0.95rem;"></p>
+    </div>
+    <canvas id="wordCanvas" width="1000" height="700"></canvas>
+  </div>
+
+  <!-- Keep your footer as before -->
+
   <script>
-    function openTab(tabName) { /* keep your existing openTab function */ }
+    // Keep your real versions of these if already defined elsewhere
+    function openTab(tabName) {
+      // Example fallback (safe if your real one is elsewhere)
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      const tab = document.getElementById(tabName);
+      if (tab) tab.style.display = 'block';
+    }
 
-    function showColumnKey() { /* keep your existing modal functions */ }
-    function closeModal() { /* ... */ }
+    function showColumnKey() { /* keep your existing modal logic */ }
+    function closeModal() { /* keep your existing modal logic */ }
 
-    // ==================== FIXED WORD CLOUD FUNCTION ====================
     function generateWordCloud() {
       const statusEl = document.getElementById('cloudStatus');
+      const inputRaw = document.getElementById('wordInput').value.trim();
+
       statusEl.style.color = '#6b7280';
       statusEl.textContent = 'Processing data...';
 
-      let input = document.getElementById('wordInput').value.trim();
-      if (!input) {
+      if (!inputRaw) {
         statusEl.style.color = 'red';
         statusEl.textContent = 'Please paste some data first!';
         return;
@@ -19,28 +92,31 @@
 
       const list = [];
 
-      input.split('\n').forEach(line => {
-        let cleaned = line.trim();
+      inputRaw.split('\n').forEach(line => {
+        const cleaned = line.trim();
         if (!cleaned) return;
 
-        // Improved splitting: handles tabs, multiple spaces, commas, or even Excel paste
-        let parts = cleaned.split(/\t+|\s{2,}|,+/).map(p => p.trim()).filter(p => p !== '');
+        // Split by any whitespace/comma/tab
+        const parts = cleaned.split(/[\s,]+/).filter(Boolean);
 
-        if (parts.length >= 2) {
-          const word = parts[0];
-          // Try to find a number in the remaining parts (in case there are extra columns)
-          let freqStr = parts.find(p => !isNaN(parseFloat(p)));
-          const freq = parseFloat(freqStr);
+        // Need at least "word number"
+        if (parts.length < 2) return;
 
-          if (word && !isNaN(freq) && freq > 0) {
-            list.push([word, freq]);
-          }
+        // Find first numeric token
+        const numIndex = parts.findIndex(p => Number.isFinite(parseFloat(p)));
+        if (numIndex <= 0) return; // no number or number appears before any word
+
+        const word = parts.slice(0, numIndex).join(' ');
+        const freq = parseFloat(parts[numIndex]);
+
+        if (word && Number.isFinite(freq) && freq > 0) {
+          list.push([word, freq]);
         }
       });
 
       if (list.length === 0) {
         statusEl.style.color = 'red';
-        statusEl.textContent = 'Could not find valid word + frequency pairs. Try pasting just two columns.';
+        statusEl.textContent = 'Could not find valid word + frequency pairs. Try pasting two columns like: word 2.5';
         return;
       }
 
@@ -51,9 +127,9 @@
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      statusEl.style.color = '#6b7280';
       statusEl.textContent = 'Generating cloud...';
 
-      // Small delay + check if library loaded
       setTimeout(() => {
         if (typeof WordCloud !== 'function') {
           statusEl.style.color = 'red';
@@ -79,13 +155,13 @@
       }, 100);
     }
 
-    // Auto-fill example when opening the tab
+    // Auto-fill example when opening/clicking Word Cloud tab button
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function () {
         if (this.textContent.includes('Word Cloud')) {
           setTimeout(() => {
             const ta = document.getElementById('wordInput');
-            if (!ta.value.trim()) {
+            if (ta && !ta.value.trim()) {
               ta.value = `distractor 2.56
 extractions 2.54
 subcontractor 2.49
@@ -103,3 +179,5 @@ subcontracted 2.30`;
       });
     });
   </script>
+</body>
+</html>
