@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BAWF Morphological Database</title>
 
+  <!-- WordCloud2 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2/1.2.3/wordcloud2.min.js"></script>
 
   <style>
@@ -39,13 +40,13 @@
 
     .loading-note { text-align:center; font-size:1.1rem; color:#6b7280; background:#f0f4f8; padding:16px; border-radius:8px; margin:20px 0; }
 
-    /* Word cloud input UI */
+    /* Word cloud controls */
     #wordInput {
       width: 90%;
       max-width: 900px;
       height: 220px;
       padding: 16px;
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 1rem;
       border: 2px solid #d1d5db;
       border-radius: 10px;
@@ -55,24 +56,19 @@
     #generateBtn {
       margin-top: 8px;
       padding: 14px 40px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       background: #1d4ed8;
       color: white;
       border: none;
       border-radius: 10px;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(29,78,216,0.25);
     }
     #generateBtn:hover { background:#1e40af; }
-    #cloudStatus {
-      margin-top: 12px;
-      color:#6b7280;
-      font-size:0.95rem;
-      min-height: 1.2em;
-    }
     #wordCanvas {
       display: block;
-      margin: 32px auto;
+      margin: 24px auto 0 auto;
       max-width: 100%;
       border-radius: 12px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.08);
@@ -81,7 +77,7 @@
 
     /* Modal */
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); overflow-y:auto; }
-    .modal-content { background-color:#fff; margin:40px auto; padding:30px; border-radius:12px; max-width:920px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
+    .modal-content { background-color:#fff; margin:40px auto; padding:30px; border-radius:12px; max-width:980px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
     .modal-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e5e7eb; padding-bottom:15px; margin-bottom:20px; }
     .modal-header h2 { margin:0; color:#1d4ed8; }
     .close { font-size:2rem; font-weight:bold; color:#888; cursor:pointer; }
@@ -117,10 +113,10 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="word-families" onclick="openTab('word-families', this)">Word Families</button>
-      <button class="tab-btn" data-tab="compounds" onclick="openTab('compounds', this)">Compound Words</button>
-      <button class="tab-btn" data-tab="definitions" onclick="openTab('definitions', this)">Definitions & Etymologies</button>
-      <button class="tab-btn" data-tab="wordcloud" onclick="openTab('wordcloud', this)">Word Cloud Generator</button>
+      <button class="tab-btn active" onclick="openTab('word-families', this)">Word Families</button>
+      <button class="tab-btn" onclick="openTab('compounds', this)">Compound Words</button>
+      <button class="tab-btn" onclick="openTab('definitions', this)">Definitions & Etymologies</button>
+      <button class="tab-btn" onclick="openTab('wordcloud', this)">Word Cloud Generator</button>
     </div>
 
     <!-- Word Families Tab -->
@@ -151,10 +147,14 @@
     <div id="wordcloud" class="tab-content">
       <div style="max-width:900px; margin:0 auto; text-align:center;">
         <p><strong>Instructions:</strong> Copy two columns (Word + Frequency) and paste below.</p>
-        <textarea id="wordInput" placeholder="Paste here...&#10;Example:&#10;analysis 120&#10;morphology 95&#10;prefix 78"></textarea>
+        <textarea id="wordInput" placeholder="Paste here...
+Example:
+analysis 120
+morphology 95
+prefix 78"></textarea>
         <br>
         <button id="generateBtn" onclick="generateWordCloud()">Generate Word Cloud</button>
-        <p id="cloudStatus"></p>
+        <p id="cloudStatus" style="margin-top:10px; color:#6b7280; font-size:0.95rem;"></p>
       </div>
       <canvas id="wordCanvas" width="1000" height="700"></canvas>
     </div>
@@ -164,55 +164,65 @@
     </footer>
   </div>
 
-  <!-- Column Key Modal -->
+  <!-- Modal -->
   <div id="columnModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Column Information Key – Easy Explanations</h2>
+        <h2>Column Definitions for the BAWF Morphological Database</h2>
         <span class="close" onclick="closeModal()">&times;</span>
       </div>
       <div class="modal-body">
+
         <h3>Core Word Information</h3>
         <ul>
-          <li><strong>Word:</strong> The actual word as you see it written (the “surface form”).</li>
-          <li><strong>Word_frq_Zipf:</strong> <strong>Zipf score</strong> – a simple number that shows how common a word is in everyday English. Higher number = much more frequent.</li>
-          <li><strong>FLemma:</strong> <strong>Lemma</strong> – the basic dictionary form of the word.</li>
-          <li><strong>GPT_Coded_Word_Parts:</strong> How the word is broken into prefixes, root, and suffixes (done with AI help).</li>
+          <li><strong>Word:</strong> The surface wordform (as it appears in the dictionary and corpora).</li>
+          <li><strong>Word_frq_Zipf:</strong> Zipf frequency score of the wordform, calculated from a large English corpus (higher value = more frequent in everyday language use).</li>
+          <li><strong>FLemma:</strong> The lemma of the word (ignoring part of speech).</li>
+          <li><strong>GPT_Coded_Word_Parts:</strong> Morphological breakdown of the word into prefixes, root(s), and suffixes, generated by the fine-tuned GPT 4.1 analysis.</li>
         </ul>
 
         <h3>Baseword / Root Information</h3>
         <ul>
-          <li><strong>Baseword:</strong> The main root word after removing prefixes and suffixes.</li>
+          <li><strong>Baseword:</strong> The central base form of the word after removing affixes.</li>
           <li><strong>Baseword_frq_Zipf:</strong> Zipf frequency score of the baseword itself.</li>
-          <li><strong>Baseword_Family_Size:</strong> How many different words belong to the same baseword family (not counting compounds).</li>
+          <li><strong>Baseword_Family_Size:</strong> Number of different wordforms that belong to the same baseword family (excluding compounds).</li>
+          <li><strong>Baseword_FamilySize_Incl_Compounds:</strong> Number of different wordforms in the baseword family, including compounds.</li>
+          <li><strong>Baseword_Zipf_Inc_Compounds:</strong> Zipf frequency of the baseword, adjusted to include compounds.</li>
         </ul>
 
         <h3>Root & Etymological Information</h3>
         <ul>
-          <li><strong>GPT_Root:</strong> The main root of the word (identified with AI help).</li>
-          <li><strong>Avg_Root_Zipf_BNC_COCA:</strong> Average Zipf frequency of all words that share this root.</li>
+          <li><strong>GPT_Root:</strong> The primary root identified using GPT-assisted morphological analysis.</li>
+          <li><strong>Avg_Root_Zipf_BNC_COCA:</strong> Average Zipf frequency (based on BNC-COCA data) of words sharing the same root.</li>
+          <li><strong>Root_FamilySize:</strong> Number of different wordforms sharing the same root (excluding compounds).</li>
+          <li><strong>Root_FamilySize_Inc_Compounds:</strong> Number of different wordforms sharing the same root, including compounds.</li>
+          <li><strong>Avg_Root_Zipf_Inc_Compounds:</strong> Average Zipf frequency of words sharing the root, including compounds.</li>
         </ul>
 
         <h3>Greek / Latin Roots</h3>
         <ul>
-          <li><strong>Greek_Latin_Root_1 / Root_2:</strong> The classical (Greek or Latin) root(s) in the word.</li>
-          <li><strong>Greek_Latin_Meaning_1 / Meaning_2:</strong> What that classical root actually means.</li>
+          <li><strong>Greek_Latin_Root_1:</strong> First identified classical (Greek or Latin) root.</li>
+          <li><strong>Greek_Latin_Meaning_1:</strong> Meaning of the first classical root.</li>
+          <li><strong>Greek_Latin_Root_1_FamilySize (recompute):</strong> Number of different wordforms containing this classical root.</li>
+          <li><strong>Avg_Greek_Latin_Root_1_Zipf_BNC_COCA:</strong> Average Zipf frequency of words containing the first classical root.</li>
+          <li><strong>Greek_Latin_Root_2:</strong> Second identified classical root (if present).</li>
+          <li><strong>Greek_Latin_Meaning_2:</strong> Meaning of the second classical root.</li>
+          <li><strong>Greek_Latin_Roots_FamilySize_Incl_compounds:</strong> Total family size for classical roots, including compounds.</li>
+          <li><strong>Greek_Latin_Roots_Zipf__Incl_compounds:</strong> Zipf frequency measures for classical roots, including compounds.</li>
         </ul>
 
-        <h3>Other Useful Columns</h3>
+        <h3>Prefixes & Suffixes</h3>
         <ul>
-          <li><strong>N_Morphemes:</strong> Total number of meaningful parts (morphemes) in the word.</li>
-          <li><strong>Reading AoA (Green et al., 2025):</strong> Estimated age at which children usually learn to read this word.</li>
-          <li><strong>Vocabulary eXpected Grade Level (Flor et al., 2024):</strong> U.S. grade level when most students are expected to know this word.</li>
+          <li><strong>Prefix_1 to Prefix_3</strong> and <strong>Suffix_1 to Suffix_6</strong> include meaning, all forms, frequency, count, and mean Zipf scores.</li>
         </ul>
 
-        <p style="margin-top:25px; font-style:italic; background:#f0f4f8; padding:15px; border-radius:8px;">
-          <strong>Why Zipf scores are helpful:</strong> They let you quickly sort the whole database from the most common everyday words (high Zipf) to the rarest ones (low Zipf).
-        </p>
-
-        <p style="margin-top:20px; font-style:italic;">
-          <strong>“Extended”</strong> = statistics that also include compound words (e.g. “blackboard”, “firefly”) that contain the same root or baseword.
-        </p>
+        <h3>Other Morphological & Psycholinguistic Measures</h3>
+        <ul>
+          <li><strong>N_Morphemes:</strong> Total number of morphemes in the word.</li>
+          <li><strong>Reading AoA (Green et al., 2025):</strong> Age of Acquisition for reading this word.</li>
+          <li><strong>Vocabulary eXpected Grade Level (Flor et al., 2024):</strong> Expected U.S. grade level.</li>
+          <li><strong>GPT_Familiarity (Brysbaert et al., 2024):</strong> GPT-estimated familiarity rating.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -222,12 +232,24 @@
       document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
       document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
       document.getElementById(tabName).classList.add("active");
+      if (btnEl) btnEl.classList.add("active");
 
-      if (btnEl) {
-        btnEl.classList.add("active");
-      } else {
-        const b = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
-        if (b) b.classList.add("active");
+      // Optional autofill when opening cloud tab
+      if (tabName === "wordcloud") {
+        const ta = document.getElementById("wordInput");
+        if (!ta.value.trim()) {
+          ta.value = `distractor 2.56
+extractions 2.54
+subcontractor 2.49
+extractor 2.48
+abstracting 2.47
+abstractly 2.42
+contractile 2.41
+detracted 2.39
+attractor 2.35
+retracting 2.32
+subcontracted 2.30`;
+        }
       }
     }
 
@@ -239,43 +261,64 @@
       document.getElementById("columnModal").style.display = "none";
     }
 
-    window.addEventListener("click", function(e) {
-      if (e.target && e.target.id === "columnModal") closeModal();
-    });
+    window.onclick = function(event) {
+      if (event.target.id === "columnModal") closeModal();
+    };
 
     function generateWordCloud() {
       const statusEl = document.getElementById("cloudStatus");
+      const raw = document.getElementById("wordInput").value.trim();
+
       statusEl.style.color = "#6b7280";
       statusEl.textContent = "Processing data...";
 
-      const input = document.getElementById("wordInput").value.trim();
-      if (!input) {
+      if (!raw) {
         statusEl.style.color = "red";
         statusEl.textContent = "Please paste some word-frequency data first.";
         return;
       }
 
-      const list = [];
-      input.split(/\r?\n/).forEach(line => {
-        const cleaned = line.trim();
-        if (!cleaned) return;
-
-        // Works for single-space, tabs, commas, or mixed delimiters
-        const parts = cleaned.split(/[\s,]+/).map(p => p.trim()).filter(Boolean);
-        if (parts.length < 2) return;
-
-        const word = parts[0];
-        const freqStr = parts.slice(1).find(p => !isNaN(parseFloat(p)));
-        const freq = parseFloat(freqStr);
-
-        if (word && !isNaN(freq) && freq > 0) {
-          list.push([word, freq]);
-        }
-      });
-
-      if (list.length === 0) {
+      if (typeof WordCloud !== "function") {
         statusEl.style.color = "red";
-        statusEl.textContent = "No valid word-frequency pairs found. Example format: attract 4.27";
+        statusEl.textContent = "WordCloud library did not load. Refresh the page and try again.";
+        return;
+      }
+
+      const list = [];
+      const lines = raw.split(/\r?\n/);
+
+      for (const line of lines) {
+        const cleaned = line.trim();
+        if (!cleaned) continue;
+
+        // 1) Preferred parse: word/phrase + final numeric value at end of line
+        // Works for: "machine learning 12.5", "prefix, 78", "word\t34"
+        let m = cleaned.match(/^(.*?)[,\t ]+(-?\d+(?:\.\d+)?)$/);
+
+        if (m) {
+          const word = m[1].trim();
+          const freq = parseFloat(m[2]);
+          if (word && Number.isFinite(freq) && freq > 0) {
+            list.push([word, freq]);
+            continue;
+          }
+        }
+
+        // 2) Fallback: split by whitespace/comma and take first token + first numeric token
+        const parts = cleaned.split(/[\s,]+/).filter(Boolean);
+        if (parts.length >= 2) {
+          const word = parts[0];
+          const numToken = parts.find(p => Number.isFinite(parseFloat(p)));
+          const freq = parseFloat(numToken);
+          if (word && Number.isFinite(freq) && freq > 0) {
+            list.push([word, freq]);
+          }
+        }
+      }
+
+      if (!list.length) {
+        statusEl.style.color = "red";
+        statusEl.textContent = "No valid word-frequency pairs found. Use format like: word 12.3";
         return;
       }
 
@@ -285,14 +328,10 @@
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (typeof WordCloud !== "function") {
-        statusEl.style.color = "red";
-        statusEl.textContent = "Word cloud library failed to load. Refresh and try again.";
-        return;
-      }
+      statusEl.style.color = "#6b7280";
+      statusEl.textContent = `Generating cloud from ${list.length} words...`;
 
-      statusEl.textContent = "Generating cloud...";
-
+      // Ensure render after UI update
       setTimeout(() => {
         WordCloud(canvas, {
           list,
@@ -309,7 +348,7 @@
 
         statusEl.style.color = "#15803d";
         statusEl.textContent = `Success! ${list.length} words generated.`;
-      }, 100);
+      }, 60);
     }
   </script>
 </body>
