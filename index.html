@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BAWF Morphological Database</title>
- 
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2/1.2.3/wordcloud2.min.js"></script>
- 
+
   <style>
     body { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(to bottom, #fdfdfd, #f8f8f8); color:#111827; }
     .container { max-width:1800px; margin:32px auto; padding:32px 24px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
@@ -39,6 +39,46 @@
 
     .loading-note { text-align:center; font-size:1.1rem; color:#6b7280; background:#f0f4f8; padding:16px; border-radius:8px; margin:20px 0; }
 
+    /* Word cloud input UI */
+    #wordInput {
+      width: 90%;
+      max-width: 900px;
+      height: 220px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 1rem;
+      border: 2px solid #d1d5db;
+      border-radius: 10px;
+      resize: vertical;
+      background: #f9fafb;
+    }
+    #generateBtn {
+      margin-top: 8px;
+      padding: 14px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: #1d4ed8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #generateBtn:hover { background:#1e40af; }
+    #cloudStatus {
+      margin-top: 12px;
+      color:#6b7280;
+      font-size:0.95rem;
+      min-height: 1.2em;
+    }
+    #wordCanvas {
+      display: block;
+      margin: 32px auto;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      background: white;
+    }
+
     /* Modal */
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); overflow-y:auto; }
     .modal-content { background-color:#fff; margin:40px auto; padding:30px; border-radius:12px; max-width:920px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
@@ -59,7 +99,7 @@
     </header>
 
     <div class="loading-note">
-      <strong>Note:</strong> Interactive Excel tables may take <strong>15–20 seconds</strong> to fully load, depending on your internet connection. 
+      <strong>Note:</strong> Interactive Excel tables may take <strong>15–20 seconds</strong> to fully load, depending on your internet connection.
       Please be patient. Use the Download buttons for instant offline access.
     </div>
 
@@ -77,10 +117,10 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="openTab('word-families')">Word Families</button>
-      <button class="tab-btn" onclick="openTab('compounds')">Compound Words</button>
-      <button class="tab-btn" onclick="openTab('definitions')">Definitions & Etymologies</button>
-      <button class="tab-btn" onclick="openTab('wordcloud')">Word Cloud Generator</button>
+      <button class="tab-btn active" data-tab="word-families" onclick="openTab('word-families', this)">Word Families</button>
+      <button class="tab-btn" data-tab="compounds" onclick="openTab('compounds', this)">Compound Words</button>
+      <button class="tab-btn" data-tab="definitions" onclick="openTab('definitions', this)">Definitions & Etymologies</button>
+      <button class="tab-btn" data-tab="wordcloud" onclick="openTab('wordcloud', this)">Word Cloud Generator</button>
     </div>
 
     <!-- Word Families Tab -->
@@ -112,8 +152,9 @@
       <div style="max-width:900px; margin:0 auto; text-align:center;">
         <p><strong>Instructions:</strong> Copy two columns (Word + Frequency) and paste below.</p>
         <textarea id="wordInput" placeholder="Paste here...&#10;Example:&#10;analysis 120&#10;morphology 95&#10;prefix 78"></textarea>
-        <br><br>
+        <br>
         <button id="generateBtn" onclick="generateWordCloud()">Generate Word Cloud</button>
+        <p id="cloudStatus"></p>
       </div>
       <canvas id="wordCanvas" width="1000" height="700"></canvas>
     </div>
@@ -123,7 +164,7 @@
     </footer>
   </div>
 
-  <!-- ==================== IMPROVED USER-FRIENDLY COLUMN KEY MODAL ==================== -->
+  <!-- Column Key Modal -->
   <div id="columnModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -131,12 +172,11 @@
         <span class="close" onclick="closeModal()">&times;</span>
       </div>
       <div class="modal-body">
-
         <h3>Core Word Information</h3>
         <ul>
           <li><strong>Word:</strong> The actual word as you see it written (the “surface form”).</li>
-          <li><strong>Word_frq_Zipf:</strong> <strong>Zipf score</strong> – a simple number that shows how common a word is in everyday English. Higher number = much more frequent. <em>Very useful for sorting the list from most common to rarest words.</em></li>
-          <li><strong>FLemma:</strong> <strong>Lemma</strong> – the basic dictionary form of the word. For example, “running”, “ran”, and “runs” all share the same lemma: “run”. This helps group different forms of the same word.</li>
+          <li><strong>Word_frq_Zipf:</strong> <strong>Zipf score</strong> – a simple number that shows how common a word is in everyday English. Higher number = much more frequent.</li>
+          <li><strong>FLemma:</strong> <strong>Lemma</strong> – the basic dictionary form of the word.</li>
           <li><strong>GPT_Coded_Word_Parts:</strong> How the word is broken into prefixes, root, and suffixes (done with AI help).</li>
         </ul>
 
@@ -167,7 +207,7 @@
         </ul>
 
         <p style="margin-top:25px; font-style:italic; background:#f0f4f8; padding:15px; border-radius:8px;">
-          <strong>Why Zipf scores are helpful:</strong> They let you quickly sort the whole database from the most common everyday words (high Zipf) to the rarest ones (low Zipf). This is much more useful than raw frequency counts.
+          <strong>Why Zipf scores are helpful:</strong> They let you quickly sort the whole database from the most common everyday words (high Zipf) to the rarest ones (low Zipf).
         </p>
 
         <p style="margin-top:20px; font-style:italic;">
@@ -178,11 +218,17 @@
   </div>
 
   <script>
-    function openTab(tabName) {
+    function openTab(tabName, btnEl) {
       document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
       document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
       document.getElementById(tabName).classList.add("active");
-      event.currentTarget.classList.add("active");
+
+      if (btnEl) {
+        btnEl.classList.add("active");
+      } else {
+        const b = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+        if (b) b.classList.add("active");
+      }
     }
 
     function showColumnKey() {
@@ -193,40 +239,77 @@
       document.getElementById("columnModal").style.display = "none";
     }
 
-    window.onclick = function(event) {
-      if (event.target.id === "columnModal") closeModal();
-    }
+    window.addEventListener("click", function(e) {
+      if (e.target && e.target.id === "columnModal") closeModal();
+    });
 
     function generateWordCloud() {
-      const input = document.getElementById('wordInput').value.trim();
-      if (!input) return alert("Please paste some word-frequency data first!");
+      const statusEl = document.getElementById("cloudStatus");
+      statusEl.style.color = "#6b7280";
+      statusEl.textContent = "Processing data...";
+
+      const input = document.getElementById("wordInput").value.trim();
+      if (!input) {
+        statusEl.style.color = "red";
+        statusEl.textContent = "Please paste some word-frequency data first.";
+        return;
+      }
+
       const list = [];
-      input.split('\n').forEach(line => {
+      input.split(/\r?\n/).forEach(line => {
         const cleaned = line.trim();
         if (!cleaned) return;
-        const parts = cleaned.split(/\t|\s{2,}|,/).map(p => p.trim());
-        if (parts.length >= 2) {
-          const word = parts[0];
-          const freq = parseFloat(parts[1]);
-          if (word && !isNaN(freq) && freq > 0) list.push([word, freq]);
+
+        // Works for single-space, tabs, commas, or mixed delimiters
+        const parts = cleaned.split(/[\s,]+/).map(p => p.trim()).filter(Boolean);
+        if (parts.length < 2) return;
+
+        const word = parts[0];
+        const freqStr = parts.slice(1).find(p => !isNaN(parseFloat(p)));
+        const freq = parseFloat(freqStr);
+
+        if (word && !isNaN(freq) && freq > 0) {
+          list.push([word, freq]);
         }
       });
-      if (list.length === 0) return alert("No valid word-frequency pairs found.");
+
+      if (list.length === 0) {
+        statusEl.style.color = "red";
+        statusEl.textContent = "No valid word-frequency pairs found. Example format: attract 4.27";
+        return;
+      }
+
       list.sort((a, b) => b[1] - a[1]);
-      const canvas = document.getElementById('wordCanvas');
-      const ctx = canvas.getContext('2d');
+
+      const canvas = document.getElementById("wordCanvas");
+      const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      WordCloud(canvas, {
-        list: list,
-        gridSize: 12,
-        weightFactor: 20,
-        fontFamily: 'Segoe UI, Arial, sans-serif',
-        color: 'random-dark',
-        rotateRatio: 0.3,
-        backgroundColor: '#ffffff',
-        minSize: 10,
-        shrinkToFit: true
-      });
+
+      if (typeof WordCloud !== "function") {
+        statusEl.style.color = "red";
+        statusEl.textContent = "Word cloud library failed to load. Refresh and try again.";
+        return;
+      }
+
+      statusEl.textContent = "Generating cloud...";
+
+      setTimeout(() => {
+        WordCloud(canvas, {
+          list,
+          gridSize: 10,
+          weightFactor: 24,
+          fontFamily: "Segoe UI, Arial, sans-serif",
+          color: "random-dark",
+          rotateRatio: 0.25,
+          backgroundColor: "#ffffff",
+          minSize: 10,
+          shrinkToFit: true,
+          drawOutOfBound: false
+        });
+
+        statusEl.style.color = "#15803d";
+        statusEl.textContent = `Success! ${list.length} words generated.`;
+      }, 100);
     }
   </script>
 </body>
