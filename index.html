@@ -4,77 +4,54 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BAWF Morphological Database</title>
-
   <!-- WordCloud2 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2/1.2.3/wordcloud2.min.js"></script>
-
   <style>
     body { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(to bottom, #fdfdfd, #f8f8f8); color:#111827; }
     .container { max-width:1800px; margin:32px auto; padding:32px 24px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
     header { text-align:center; margin-bottom:20px; }
     h1 { margin:0 0 12px 0; font-size:2.8rem; color:#1d4ed8; font-weight:700; }
     .tagline { font-size:1.25rem; color:#4b5563; max-width:900px; margin:0 auto 24px auto; }
-
     .key-btn {
       display:inline-block; padding:12px 24px; background:#1d4ed8; color:white;
       font-weight:600; border-radius:8px; cursor:pointer; margin:20px 0; text-align:center;
       box-shadow:0 4px 12px rgba(29,78,216,0.25);
     }
     .key-btn:hover { background:#1e40af; }
-
     .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:30px 0 40px 0; }
     .visual-aid { max-width:280px; border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,0.1); }
-
     .tabs { display:flex; justify-content:center; gap:12px; margin:32px 0; flex-wrap:wrap; }
     .tab-btn { padding:12px 28px; font-size:1.1rem; font-weight:600; background:#e5e7eb; color:#374151; border:none; border-radius:8px 8px 0 0; cursor:pointer; }
     .tab-btn.active { background:#1d4ed8; color:white; }
-
     .tab-content { display:none; padding:24px; }
     .tab-content.active { display:block; }
-
     .download-section { text-align:center; margin:20px 0; }
-    .download-btn { display:inline-flex; align-items:center; gap:12px; padding:14px 32px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; text-decoration:none; border-radius:10px; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
+    .download-btn { 
+      display:inline-flex; align-items:center; gap:12px; padding:14px 32px; font-size:1.1rem; 
+      font-weight:600; background:#1d4ed8; color:white; text-decoration:none; border-radius:10px; 
+      box-shadow:0 4px 12px rgba(29,78,216,0.25); 
+    }
     .download-btn:hover { background:#1e40af; transform:translateY(-2px); }
-
     iframe { width:100%; height:85vh; min-height:700px; border:none; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
-
     .loading-note { text-align:center; font-size:1.1rem; color:#6b7280; background:#f0f4f8; padding:16px; border-radius:8px; margin:20px 0; }
 
-    /* Word cloud controls */
+    /* Word cloud */
     #wordInput {
-      width: 90%;
-      max-width: 900px;
-      height: 220px;
-      padding: 16px;
+      width: 90%; max-width: 900px; height: 220px; padding: 16px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 1rem;
-      border: 2px solid #d1d5db;
-      border-radius: 10px;
-      resize: vertical;
-      background: #f9fafb;
+      font-size: 1rem; border: 2px solid #d1d5db; border-radius: 10px;
+      resize: vertical; background: #f9fafb;
     }
     #generateBtn {
-      margin-top: 8px;
-      padding: 14px 40px;
-      font-size: 1.05rem;
-      font-weight: 600;
-      background: #1d4ed8;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(29,78,216,0.25);
+      margin-top: 8px; padding: 14px 40px; font-size: 1.05rem; font-weight: 600;
+      background: #1d4ed8; color: white; border: none; border-radius: 10px;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(29,78,216,0.25);
     }
     #generateBtn:hover { background:#1e40af; }
     #wordCanvas {
-      display: block;
-      margin: 24px auto 0 auto;
-      max-width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-      background: white;
+      display: block; margin: 24px auto 0 auto; max-width: 100%; 
+      border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); background: white;
     }
-
     /* Modal */
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); overflow-y:auto; }
     .modal-content { background-color:#fff; margin:40px auto; padding:30px; border-radius:12px; max-width:980px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
@@ -95,7 +72,7 @@
     </header>
 
     <div class="loading-note">
-      <strong>Note:</strong> Interactive Excel tables may take <strong>15–20 seconds</strong> to fully load, depending on your internet connection.
+      <strong>Note:</strong> Interactive Excel tables may take <strong>15–20 seconds</strong> to fully load. 
       Please be patient. Use the Download buttons for instant offline access.
     </div>
 
@@ -147,16 +124,12 @@
     <div id="wordcloud" class="tab-content">
       <div style="max-width:900px; margin:0 auto; text-align:center;">
         <p><strong>Instructions:</strong> Copy two columns (Word + Frequency) and paste below.</p>
-        <textarea id="wordInput" placeholder="Paste here...
-Example:
-analysis 120
-morphology 95
-prefix 78"></textarea>
+        <textarea id="wordInput" placeholder="Paste here...&#10;Example:&#10;analysis 120&#10;morphology 95&#10;prefix 78"></textarea>
         <br>
         <button id="generateBtn" onclick="generateWordCloud()">Generate Word Cloud</button>
         <p id="cloudStatus" style="margin-top:10px; color:#6b7280; font-size:0.95rem;"></p>
       </div>
-      <canvas id="wordCanvas" width="1000" height="700"></canvas>
+      <canvas id="wordCanvas" width="1100" height="700"></canvas>
     </div>
 
     <footer style="text-align:center; margin-top:48px; color:#6b7280;">
@@ -169,10 +142,9 @@ prefix 78"></textarea>
     <div class="modal-content">
       <div class="modal-header">
         <h2>Column Definitions for the BAWF Morphological Database</h2>
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="close" onclick="closeModal()">×</span>
       </div>
       <div class="modal-body">
-
         <h3>Core Word Information</h3>
         <ul>
           <li><strong>Word:</strong> The surface wordform (as it appears in the dictionary and corpora).</li>
@@ -234,7 +206,6 @@ prefix 78"></textarea>
       document.getElementById(tabName).classList.add("active");
       if (btnEl) btnEl.classList.add("active");
 
-      // Optional autofill when opening cloud tab
       if (tabName === "wordcloud") {
         const ta = document.getElementById("wordInput");
         if (!ta.value.trim()) {
@@ -256,11 +227,9 @@ subcontracted 2.30`;
     function showColumnKey() {
       document.getElementById("columnModal").style.display = "block";
     }
-
     function closeModal() {
       document.getElementById("columnModal").style.display = "none";
     }
-
     window.onclick = function(event) {
       if (event.target.id === "columnModal") closeModal();
     };
@@ -268,7 +237,6 @@ subcontracted 2.30`;
     function generateWordCloud() {
       const statusEl = document.getElementById("cloudStatus");
       const raw = document.getElementById("wordInput").value.trim();
-
       statusEl.style.color = "#6b7280";
       statusEl.textContent = "Processing data...";
 
@@ -280,7 +248,7 @@ subcontracted 2.30`;
 
       if (typeof WordCloud !== "function") {
         statusEl.style.color = "red";
-        statusEl.textContent = "WordCloud library did not load. Refresh the page and try again.";
+        statusEl.textContent = "WordCloud library failed to load. Please refresh the page.";
         return;
       }
 
@@ -291,10 +259,8 @@ subcontracted 2.30`;
         const cleaned = line.trim();
         if (!cleaned) continue;
 
-        // 1) Preferred parse: word/phrase + final numeric value at end of line
-        // Works for: "machine learning 12.5", "prefix, 78", "word\t34"
-        let m = cleaned.match(/^(.*?)[,\t ]+(-?\d+(?:\.\d+)?)$/);
-
+        // Improved parsing: word + number at the end
+        let m = cleaned.match(/^(.*?)\s+(-?\d+(?:\.\d+)?)$/);
         if (m) {
           const word = m[1].trim();
           const freq = parseFloat(m[2]);
@@ -304,12 +270,12 @@ subcontracted 2.30`;
           }
         }
 
-        // 2) Fallback: split by whitespace/comma and take first token + first numeric token
+        // Fallback
         const parts = cleaned.split(/[\s,]+/).filter(Boolean);
         if (parts.length >= 2) {
           const word = parts[0];
-          const numToken = parts.find(p => Number.isFinite(parseFloat(p)));
-          const freq = parseFloat(numToken);
+          const num = parts.find(p => !isNaN(parseFloat(p)));
+          const freq = parseFloat(num);
           if (word && Number.isFinite(freq) && freq > 0) {
             list.push([word, freq]);
           }
@@ -318,37 +284,37 @@ subcontracted 2.30`;
 
       if (!list.length) {
         statusEl.style.color = "red";
-        statusEl.textContent = "No valid word-frequency pairs found. Use format like: word 12.3";
+        statusEl.textContent = "No valid word-frequency pairs found. Use format: word 12.3";
         return;
       }
 
       list.sort((a, b) => b[1] - a[1]);
 
       const canvas = document.getElementById("wordCanvas");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Force proper canvas size
+      canvas.width = 1100;
+      canvas.height = 700;
 
       statusEl.style.color = "#6b7280";
       statusEl.textContent = `Generating cloud from ${list.length} words...`;
 
-      // Ensure render after UI update
       setTimeout(() => {
         WordCloud(canvas, {
-          list,
-          gridSize: 10,
-          weightFactor: 24,
+          list: list,
+          gridSize: 8,
+          weightFactor: 18,
           fontFamily: "Segoe UI, Arial, sans-serif",
           color: "random-dark",
-          rotateRatio: 0.25,
+          rotateRatio: 0.3,
           backgroundColor: "#ffffff",
-          minSize: 10,
+          minSize: 8,
           shrinkToFit: true,
           drawOutOfBound: false
         });
 
         statusEl.style.color = "#15803d";
-        statusEl.textContent = `Success! ${list.length} words generated.`;
-      }, 60);
+        statusEl.textContent = `✅ Success! ${list.length} words generated.`;
+      }, 100);
     }
   </script>
 </body>
