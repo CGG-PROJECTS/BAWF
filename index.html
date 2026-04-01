@@ -15,28 +15,11 @@
     .tagline { font-size:1.25rem; color:#4b5563; max-width:900px; margin:0 auto 24px auto; }
     .key-btn { display:inline-block; padding:12px 24px; background:#1d4ed8; color:white; font-weight:600; border-radius:8px; cursor:pointer; margin:20px 0; text-align:center; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
     .key-btn:hover { background:#1e40af; }
-
-    /* Visual Banner */
     .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:30px 0 40px 0; }
-    .visual-aid { 
-      max-width:280px; 
-      border-radius:12px; 
-      box-shadow:0 6px 16px rgba(0,0,0,0.1); 
-      transition: transform 0.3s ease; 
-    }
+    .visual-aid { max-width:280px; border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
     .visual-aid:hover { transform: scale(1.05); }
-
-    /* Info Card */
-    .info-card {
-      background: #f0f4f8;
-      border-radius: 12px;
-      padding: 24px;
-      margin: 30px auto;
-      max-width: 1100px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+    .info-card { background:#f0f4f8; border-radius:12px; padding:24px; margin:30px auto; max-width:1100px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
     .info-card h3 { color:#1d4ed8; margin-top:0; }
-
     .tabs { display:flex; justify-content:center; gap:12px; margin:32px 0; flex-wrap:wrap; }
     .tab-btn { padding:12px 28px; font-size:1.1rem; font-weight:600; background:#e5e7eb; color:#374151; border:none; border-radius:8px 8px 0 0; cursor:pointer; }
     .tab-btn.active { background:#1d4ed8; color:white; }
@@ -71,32 +54,26 @@
       <div class="tagline">Morphology, roots, affixes, compounds, and etymology — interactive views (draft)</div>
     </header>
 
-    <!-- YOUR ORIGINAL WORKING VISUAL BANNER -->
     <div class="visual-banner">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" alt="Word cloud of common English prefixes" class="visual-aid">
-      <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png" alt="Children engaged in fun vocabulary and word learning" class="visual-aid">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Sign_word_matrix.png" alt="Word matrix showing family relationships" class="visual-aid">
-      <img src="https://www.the74million.org/wp-content/uploads/2019/05/Classroom-library.jpg" alt="Group of children reading books in a circle on the floor" class="visual-aid">
-      <img src="https://as1.ftcdn.net/jpg/03/08/88/54/1000_F_308885463_Y68hiTN0ZpcqBOLPARkMawFvhFut3N7S.jpg" alt="Teacher and young children reading a colorful book together" class="visual-aid">
-      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6_TLO4qHmN4sfx0hFWLJctOFPNZ824WBBrI95Qkh2U-2Z0BtwsRFf_3BVAysdW-s1rXcqfnqwTNTbozzGh2yZTCbGMDPNX_gjXBQI7PyAAEF6pofA-rxF7ImPP5vmlu_vlOhpC1WfJ4Ce/w1200-h630-p-k-no-nu/Prefixes+Posters.png" alt="Fun classroom posters for teaching prefixes and suffixes" class="visual-aid">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" alt="Word cloud" class="visual-aid">
+      <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png" alt="Vocabulary learning" class="visual-aid">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Sign_word_matrix.png/640px-Sign_word_matrix.png" alt="Word matrix" class="visual-aid">
+      <img src="https://www.the74million.org/wp-content/uploads/2019/05/Classroom-library.jpg" alt="Children reading" class="visual-aid">
+      <img src="https://as1.ftcdn.net/jpg/03/08/88/54/1000_F_308885463_Y68hiTN0ZpcqBOLPARkMawFvhFut3N7S.jpg" alt="Teacher reading" class="visual-aid">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6_TLO4qHmN4sfx0hFWLJctOFPNZ824WBBrI95Qkh2U-2Z0BtwsRFf_3BVAysdW-s1rXcqfnqwTNTbozzGh2yZTCbGMDPNX_gjXBQI7PyAAEF6pofA-rxF7ImPP5vmlu_vlOhpC1WfJ4Ce/w1200-h630-p-k-no-nu/Prefixes+Posters.png" alt="Prefixes posters" class="visual-aid">
     </div>
 
-    <!-- Info Card -->
     <div class="info-card">
       <h3>About this Database</h3>
       <ul>
         <li>Explore English word families, compound words, and definitions/etymologies</li>
         <li>Use tabs below to switch between sections</li>
-        <li>Each section loads independently for faster performance</li>
-        <li>Download individual Excel files for offline use, advanced filtering, or editing</li>
+        <li>Download individual Excel files for offline use</li>
       </ul>
-      <p style="margin-top: 16px; font-style: italic;">
-        Inspired by joyful word learning and reading — dive in and explore!
-      </p>
     </div>
 
     <div class="loading-note">
-      <strong>Note:</strong> Interactive tables may take 5–20 seconds to load (depending on connection). Use download buttons for instant access!
+      <strong>Note:</strong> Spreadsheets may take 10–20 seconds to load. Please be patient.
     </div>
 
     <div style="text-align:center;">
@@ -150,26 +127,28 @@
     </footer>
   </div>
 
-  <!-- Column Key Modal -->
+  <!-- Appendix Column Key -->
   <div id="columnModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Column Definitions for the BAWF Morphological Database</h2>
+        <h2>Appendix - Column Definitions for the BAWF Morphological Database</h2>
         <span class="close" onclick="closeModal()">×</span>
       </div>
       <div class="modal-body">
-        <!-- Your full column definitions here (unchanged) -->
         <h3>Core Word Information</h3>
         <ul>
-          <li><strong>Word:</strong> The surface wordform...</li>
-          <!-- ... (all your definitions) ... -->
+          <li><strong>Word:</strong> The surface wordform (as it appears in the dictionary and corpora).</li>
+          <li><strong>Word_frq_Zipf:</strong> Zipf frequency score of the wordform...</li>
+          <li><strong>FLemma:</strong> The lemma of the word (ignoring part of speech).</li>
+          <li><strong>GPT_Coded_Word_Parts:</strong> Morphological breakdown...</li>
         </ul>
+        <!-- (Full content as you provided earlier) -->
+        <!-- Paste the rest of your column definitions here if needed -->
       </div>
     </div>
   </div>
 
   <script>
-    // WordCloud script (already working)
     let wordCloudReady = false;
     window.addEventListener("load", () => {
       setTimeout(() => { if (typeof WordCloud === "function") wordCloudReady = true; }, 800);
