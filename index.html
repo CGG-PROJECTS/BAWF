@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BAWF Morphological Database</title>
-  
+ 
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
-  
+ 
   <style>
     body { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(to bottom, #fdfdfd, #f8f8f8); color:#111827; }
     .container { max-width:1800px; margin:32px auto; padding:32px 24px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
@@ -15,28 +15,11 @@
     .tagline { font-size:1.25rem; color:#4b5563; max-width:900px; margin:0 auto 24px auto; }
     .key-btn { display:inline-block; padding:12px 24px; background:#1d4ed8; color:white; font-weight:600; border-radius:8px; cursor:pointer; margin:20px 0; text-align:center; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
     .key-btn:hover { background:#1e40af; }
-
-    /* Visual Banner */
     .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:30px 0 40px 0; }
-    .visual-aid { 
-      max-width:280px; 
-      border-radius:12px; 
-      box-shadow:0 6px 16px rgba(0,0,0,0.1); 
-      transition: transform 0.3s ease; 
-    }
+    .visual-aid { max-width:280px; border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
     .visual-aid:hover { transform: scale(1.05); }
-
-    /* Info Card */
-    .info-card {
-      background: #f0f4f8;
-      border-radius: 12px;
-      padding: 24px;
-      margin: 30px auto;
-      max-width: 1100px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+    .info-card { background: #f0f4f8; border-radius: 12px; padding: 24px; margin: 30px auto; max-width: 1100px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .info-card h3 { color:#1d4ed8; margin-top:0; }
-
     .tabs { display:flex; justify-content:center; gap:12px; margin:32px 0; flex-wrap:wrap; }
     .tab-btn { padding:12px 28px; font-size:1.1rem; font-weight:600; background:#e5e7eb; color:#374151; border:none; border-radius:8px 8px 0 0; cursor:pointer; }
     .tab-btn.active { background:#1d4ed8; color:white; }
@@ -47,21 +30,16 @@
     .download-btn:hover { background:#1e40af; transform:translateY(-2px); }
     iframe { width:100%; height:85vh; min-height:700px; border:none; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
     .loading-note { text-align:center; font-size:1.1rem; color:#6b7280; background:#f0f4f8; padding:16px; border-radius:8px; margin:20px 0; }
-
     #wordInput { width: 90%; max-width: 900px; height: 220px; padding: 16px; font-family: ui-monospace, monospace; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 10px; resize: vertical; background: #f9fafb; }
     #generateBtn { margin-top: 12px; padding: 14px 40px; font-size: 1.05rem; font-weight: 600; background: #1d4ed8; color: white; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(29,78,216,0.25); }
     #generateBtn:hover { background:#1e40af; }
     #wordCanvas { display: block; margin: 24px auto 0 auto; max-width: 100%; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); background: white; }
-
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); overflow-y:auto; }
     .modal-content { background-color:#fff; margin:40px auto; padding:30px; border-radius:12px; max-width:980px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
     .modal-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e5e7eb; padding-bottom:15px; margin-bottom:20px; }
     .modal-header h2 { margin:0; color:#1d4ed8; }
     .close { font-size:2rem; font-weight:bold; color:#888; cursor:pointer; }
     .close:hover { color:#111; }
-    .modal-body h3 { color:#1d4ed8; margin-top:25px; }
-    .modal-body ul { padding-left:20px; line-height:1.7; }
-    .modal-body li { margin-bottom:10px; }
   </style>
 </head>
 <body>
@@ -71,7 +49,7 @@
       <div class="tagline">Morphology, roots, affixes, compounds, and etymology — interactive views (draft)</div>
     </header>
 
-    <!-- YOUR ORIGINAL WORKING VISUAL BANNER -->
+    <!-- Visual Banner -->
     <div class="visual-banner">
       <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" alt="Word cloud of common English prefixes" class="visual-aid">
       <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png" alt="Children engaged in fun vocabulary and word learning" class="visual-aid">
@@ -88,15 +66,13 @@
         <li>Explore English word families, compound words, and definitions/etymologies</li>
         <li>Use tabs below to switch between sections</li>
         <li>Each section loads independently for faster performance</li>
-        <li>Download individual Excel files for offline use, advanced filtering, or editing</li>
+        <li>Download individual Excel files for offline use</li>
       </ul>
-      <p style="margin-top: 16px; font-style: italic;">
-        Inspired by joyful word learning and reading — dive in and explore!
-      </p>
+      <p style="margin-top: 16px; font-style: italic;">Inspired by joyful word learning and reading — dive in and explore!</p>
     </div>
 
     <div class="loading-note">
-      <strong>Note:</strong> Interactive tables may take 5–20 seconds to load (depending on connection). Use download buttons for instant access!
+      <strong>Note:</strong> Interactive tables may take 5–20 seconds to load. Use the download buttons for instant access!
     </div>
 
     <div style="text-align:center;">
@@ -113,25 +89,31 @@
     <!-- Word Families -->
     <div id="word-families" class="tab-content active">
       <div class="download-section">
-        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQD2pwnY9qT1Q4DGZ2CTL9WVAVRfn9bhr__ToaqhUqf_Dqk?e=QOdlOC&download=1" class="download-btn" target="_blank">↓ Download Word Families Excel</a>
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQD2pwnY9qT1Q4DGZ2CTL9WVAVRfn9bhr__ToaqhUqf_Dqk?e=QOdlOC&download=1" 
+           class="download-btn" target="_blank">↓ Download Word Families Excel</a>
       </div>
-      <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQT2pwnY9qT1Q4DGZ2CTL9WVAfBpAfBrxzeb2qFnL73T2KA?em=2&AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></ frameborder="0" allowfullscreen></iframe>
+      <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQT2pwnY9qT1Q4DGZ2CTL9WVAfBpAfBrxzeb2qFnL73T2KA?em=2&AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
+              frameborder="0" allowfullscreen></iframe>
     </div>
 
     <!-- Compound Words -->
     <div id="compounds" class="tab-content">
       <div class="download-section">
-        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQDWH_RNq98ZTZ8Xss974f_fASVg3iIg9Wkm4coWICE-I5E?e=p928zq&download=1" class="download-btn" target="_blank">↓ Download Compound Words Excel</a>
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQDWH_RNq98ZTZ8Xss974f_fASVg3iIg9Wkm4coWICE-I5E?e=p928zq&download=1" 
+           class="download-btn" target="_blank">↓ Download Compound Words Excel</a>
       </div>
-      <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQTWH_RNq98ZTZ8Xss974f_fAc7pDMqIE7rALppqbi5WEh4?em=2&AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0" frameborder="0" allowfullscreen></iframe>
+      <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQTWH_RNq98ZTZ8Xss974f_fAc7pDMqIE7rALppqbi5WEh4?em=2&AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
+              frameborder="0" allowfullscreen></iframe>
     </div>
 
-    <!-- Definitions -->
+    <!-- Definitions & Etymologies -->
     <div id="definitions" class="tab-content">
       <div class="download-section">
-        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQAsbLYK8J8WQqwzSjZDdcQOAUsAUyuOmg3DfHR4Cs_OchE?e=3EzZ0k&download=1" class="download-btn" target="_blank">↓ Download Definitions & Etymologies Excel</a>
+        <a href="https://1drv.ms/x/c/7dd10ea681993770/IQAsbLYK8J8WQqwzSjZDdcQOAUsAUyuOmg3DfHR4Cs_OchE?e=3EzZ0k&download=1" 
+           class="download-btn" target="_blank">↓ Download Definitions & Etymologies Excel</a>
       </div>
-      <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?em=2&AllowTyping=True&wdHideGridlines=True&wdDownloadButton=True" frameborder="0" allowfullscreen></iframe>
+      <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?em=2&AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
+              frameborder="0" allowfullscreen></iframe>
     </div>
 
     <!-- Word Cloud -->
@@ -158,21 +140,17 @@
         <span class="close" onclick="closeModal()">×</span>
       </div>
       <div class="modal-body">
-        <!-- Your full column definitions here (unchanged) -->
-        <h3>Core Word Information</h3>
-        <ul>
-          <li><strong>Word:</strong> The surface wordform...</li>
-          <!-- ... (all your definitions) ... -->
-        </ul>
+        <!-- Add your column definitions here -->
       </div>
     </div>
   </div>
 
   <script>
-    // WordCloud script (already working)
     let wordCloudReady = false;
     window.addEventListener("load", () => {
-      setTimeout(() => { if (typeof WordCloud === "function") wordCloudReady = true; }, 800);
+      setTimeout(() => { 
+        if (typeof WordCloud === "function") wordCloudReady = true; 
+      }, 800);
     });
 
     function openTab(tabName, btnEl) {
@@ -185,6 +163,7 @@
     function showColumnKey() {
       document.getElementById("columnModal").style.display = "block";
     }
+
     function closeModal() {
       document.getElementById("columnModal").style.display = "none";
     }
@@ -200,8 +179,9 @@
         status.textContent = "Please paste word-frequency data first.";
         return;
       }
+
       if (!wordCloudReady && typeof WordCloud !== "function") {
-        status.textContent = "Loading Word Cloud...";
+        status.textContent = "Loading Word Cloud library...";
         setTimeout(generateWordCloud, 1000);
         return;
       }
@@ -221,12 +201,11 @@
 
       if (list.length === 0) {
         status.style.color = "red";
-        status.textContent = "No valid data. Example: analysis 120";
+        status.textContent = "No valid data. Format: word frequency";
         return;
       }
 
       list.sort((a,b) => b[1] - a[1]);
-
       const canvas = document.getElementById("wordCanvas");
       canvas.width = 1100;
       canvas.height = 700;
@@ -245,7 +224,6 @@
           minSize: 10,
           shrinkToFit: true
         });
-
         status.style.color = "#15803d";
         status.textContent = `✅ Success! ${list.length} words generated.`;
       }, 100);
