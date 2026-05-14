@@ -70,7 +70,7 @@
       <h1>BAWF Morphological Database</h1>
       <div class="tagline">Morphology, roots, affixes, compounds, and etymology — interactive</div>
     </header>
-      <button class="tab-btn" onclick="openTab('llm-generator', this)">🪄 Stories & Worksheets</button>
+      
     <!-- YOUR ORIGINAL WORKING VISUAL BANNER -->
     <div class="visual-banner">
       <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" alt="Word cloud of common English prefixes" class="visual-aid">
@@ -113,6 +113,7 @@
       <button class="tab-btn" onclick="openTab('compounds', this)">Compound Words</button>
       <button class="tab-btn" onclick="openTab('definitions', this)">Definitions & Etymologies</button>
       <button class="tab-btn" onclick="openTab('wordcloud', this)">Word Cloud Generator</button>
+      <button class="tab-btn" onclick="openTab('llm-generator', this)">🪄 Generate AI Stories & Worksheets!</button>
     </div>
 
 <!-- Word Families -->
@@ -159,30 +160,32 @@
       </div>
       <canvas id="wordCanvas" width="1100" height="700"></canvas>
     </div>
-    <!-- === NEW SIMPLE TAB - Stories & Worksheets === -->
+       <!-- === NEW TAB - Stories & Worksheets (In-Page) === -->
     <div id="llm-generator" class="tab-content">
-      <div style="max-width:900px; margin:0 auto; text-align:center;">
-        <h2 style="color:#1d4ed8;">Stories & Teacher Worksheets</h2>
-        <p><strong>Paste 5–20 words</strong> (one per line) from any BAWF table</p>
+      <div style="max-width:900px; margin:0 auto;">
+        <h2 style="text-align:center; color:#1d4ed8;">🪄 Stories & Teacher Worksheets</h2>
+        <p style="text-align:center;">Paste 5–20 words (one per line) from the BAWF tables</p>
         
-        <textarea id="llmInput" rows="10" 
-          style="width:100%; max-width:800px; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
-          placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract"></textarea><br><br>
+        <textarea id="llmInput" rows="12" 
+          style="width:100%; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
+          placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract&#10;contract"></textarea>
 
-        <select id="llmTask" style="padding:10px 16px; font-size:1.05rem; margin:0 8px 16px 0; border-radius:8px;">
-          <option value="story">Generate a Little Story</option>
-          <option value="worksheet">Generate Teacher Worksheet</option>
-          <option value="both">Generate Both</option>
-        </select>
+        <div style="text-align:center; margin:20px 0;">
+          <select id="llmTask" style="padding:10px 20px; font-size:1.05rem; border-radius:8px; margin-right:10px;">
+            <option value="story">Little Story</option>
+            <option value="worksheet" selected>Teacher Worksheet</option>
+            <option value="both">Both Story + Worksheet</option>
+          </select>
 
-        <button onclick="generateWithLLM()" 
-          style="padding:14px 40px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:10px; cursor:pointer;">
-          🚀 Generate with Free LLM
-        </button>
+          <button onclick="generateWithLLM()" 
+            style="padding:14px 36px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:10px; cursor:pointer;">
+            Generate Inside This Page
+          </button>
+        </div>
 
-        <p id="llmStatus" style="margin-top:16px; font-weight:500; min-height:28px;"></p>
+        <p id="llmStatus" style="text-align:center; font-weight:500; min-height:28px;"></p>
 
-        <div id="llmResult" style="margin-top:30px; text-align:left; display:none;"></div>
+        <div id="llmResult" style="display:none; background:#f8fafc; padding:25px; border-radius:12px; border:1px solid #e5e7eb; margin-top:20px; white-space:pre-wrap; font-size:1.05rem; line-height:1.6;"></div>
       </div>
     </div>
     <footer style="text-align:center; margin-top:48px; color:#6b7280;">
@@ -337,7 +340,7 @@
         status.textContent = `✅ Success! ${list.length} words generated.`;
       }, 100);
     }
-        // === NEW FUNCTION - LLM Generator ===
+          // === NEW FUNCTION - LLM Generator ===
     function generateWithLLM() {
       const input = document.getElementById("llmInput").value.trim();
       const task = document.getElementById("llmTask").value;
