@@ -261,6 +261,7 @@
             <option value="informational">Informational Text</option>
             <option value="fiction">Fiction Text</option>
             <option value="both" selected>Both (Info + Fiction)</option>
+            <option value="Worksheet">Worksheet</option>
           </select>
         </div>
         <div>
@@ -555,7 +556,7 @@
       prompt += `- Text type: ${cfg.textType}\n`;
       prompt += `- Grade band: ${cfg.grade}\n`;
       prompt += `- Length: ${lenMap[cfg.length] || lenMap.medium}\n`;
-      prompt += `- Content area/theme: ${cfg.contentArea || "General academic vocabulary"}\n`;
+      prompt += `- Content area/theme: ${cfg.contentArea || "General"}\n`;
       prompt += `- Teacher focus area: ${cfg.focus || "Morphology, meaning, and usage"}\n\n`;
 
       prompt += `REQUIRED OUTPUT:\n`;
@@ -575,8 +576,6 @@
 
       // Per-word requirements
       prompt += `2) For EACH target word, provide:\n`;
-      prompt += `   - Student-friendly definition\n`;
-      prompt += `   - Morpheme breakdown (prefix/base/suffix)\n`;
 
       // Activities
       if (cfg.activities.length) {
