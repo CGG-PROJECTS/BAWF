@@ -548,7 +548,6 @@ function openInLLM() {
     return;
   }
 
-  // Open immediately on click to reduce popup blocking
   const w = window.open("about:blank", "_blank");
   if (!w) {
     status.style.color = "red";
@@ -556,7 +555,6 @@ function openInLLM() {
     return;
   }
 
-  // Provider URLs (prefill links may or may not be honored)
   const encoded = encodeURIComponent(prompt);
   let url = "https://chatgpt.com/";
   if (provider === "gemini") url = `https://gemini.google.com/app?prompt=${encoded}`;
@@ -565,7 +563,6 @@ function openInLLM() {
 
   w.location.href = url;
 
-  // Always copy prompt as fallback
   navigator.clipboard.writeText(prompt).then(() => {
     status.style.color = "#15803d";
     status.textContent = "✅ Opened new tab. Prompt copied — paste if not auto-filled.";
@@ -574,7 +571,6 @@ function openInLLM() {
     status.textContent = "✅ Opened new tab. Paste prompt manually if needed.";
   });
 }
-
 
   let url = "";
   const encoded = encodeURIComponent(prompt);
