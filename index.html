@@ -299,7 +299,7 @@
       document.getElementById("columnModal").style.display = "none";
     }
 
-    function generateWordCloud() {
+      function generateWordCloud() {
       const status = document.getElementById("cloudStatus");
       const input = document.getElementById("wordInput").value.trim();
       status.style.color = "#6b7280";
@@ -359,6 +359,7 @@
         status.style.color = "#15803d";
         status.textContent = `✅ Success! ${list.length} words generated.`;
       }, 100);
+    }
     }
           // === NEW FUNCTION - LLM Generator ===
        // === IMPROVED IN-PAGE LLM GENERATOR ===
