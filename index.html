@@ -678,31 +678,54 @@
   }
 
   // Populate model dropdown from WebLLM prebuilt list
-  function populateModels() {
+function populateModels() {
     const list = webllm.prebuiltAppConfig?.model_list || [];
-    modelEl().innerHTML = "";
+    const select = modelEl();
 
-    // Prefer smaller models first (better chance on school laptops)
-    const preferred = list
-      .filter(m => (llama-3\.2.*(1b|3b)|qwen2\.5.*(1\.5b|3b)|phi-3.*mini|smollm)/i.test(m.model_id)
-);
+    select.innerHTML = "";
 
-    const source = preferred.length ? preferred : list.slice(0, 20);
+    if (!list.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No models available";
+        select.appendChild(opt);
+        return;
+    }
 
-    source.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m.model_id;
-      opt.textContent = m.model_id;
-      modelEl().appendChild(opt);
+    // Sort all models by size (smallest first)
+    const sortedModels = [...list].sort((a, b) => {
+        const getSize = (modelId) => {
+            const match = modelId.match(/(\d+\.?\d*)([bB])/i);
+            return match ? parseFloat(match[1]) : 9999;
+        };
+        return getSize(a.model_id) - getSize(b.model_id);
     });
 
-    if (!source.length) {
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = "No models found";
-      modelEl().appendChild(opt);
-    }
-  }
+    // Define small / fast models that should appear at the very top
+    const smallModels = sortedModels.filter(m => 
+        /llama-3\.2.*[13]b|qwen2\.5.*[13]\.?\d*b|phi-3.*mini|smollm|gemini-2b|1\.?[135]b|2b|3b/i.test(m.model_id)
+    );
+
+    // Remaining models
+    const otherModels = sortedModels.filter(m => !smallModels.includes(m));
+
+    // Final list: Small models first, then the rest
+    const finalList = [...smallModels, ...otherModels];
+
+    finalList.forEach(model => {
+        const opt = document.createElement("option");
+        opt.value = model.model_id;
+
+        const vramGB = model.vram_required_MB 
+            ? ` ~${Math.round(model.vram_required_MB / 1024)}GB` 
+            : "";
+
+        opt.textContent = `${model.model_id}${vramGB}`;
+        select.appendChild(opt);
+    });
+
+    console.log(`✅ Populated ${finalList.length} models (${smallModels.length} small models first)`);
+}
 
   async function initWebLLMInternal() {
     if (!window.isSecureContext) {
