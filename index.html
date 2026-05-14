@@ -247,87 +247,78 @@
 
     <!-- LLM Tab -->
     <div id="llm-generator" class="tab-content">
-      <div style="max-width:1100px; margin:0 auto;">
-        <h2 style="text-align:center; color:#1d4ed8;">🪄 AI Prompt Generator</h2>
-        <p style="text-align:center;">Choose text type, grade level, focus area, and activities.</p>
+    <div style="max-width:1100px; margin:0 auto;">
+      <h2 style="text-align:center; color:#1d4ed8;">🪄 AI Prompt Generator</h2>
+      <p style="text-align:center;">Choose text type, grade level, focus area, and activities.</p>
+      
+      <textarea id="llmInput" rows="8" style="width:100%; padding:14px; font-family:monospace; font-size:1.02rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
+        placeholder="Paste target words (one per line)&#10;unhappy&#10;misunderstand&#10;transport&#10;attract&#10;contract"></textarea>
 
-        <textarea id="llmInput" rows="8"
-          style="width:100%; padding:14px; font-family:monospace; font-size:1.02rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
-          placeholder="Paste target words (one per line)&#10;unhappy&#10;misunderstand&#10;transport&#10;attract&#10;contract"></textarea>
-
-        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:14px 0;">
-          <div>
-            <label><strong>Prompt Type</strong></label><br>
-            <select id="llmTextType" style="width:100%; padding:10px; border-radius:8px;">
-              <option value="informational">Informational Text</option>
-              <option value="fiction">Fiction Text</option>
-              <option value="both">Both (Info + Fiction)</option>
-            </select>
-          </div>
-
-          <div>
-            <label><strong>Grade Level</strong></label><br>
-            <select id="llmGrade" style="width:100%; padding:10px; border-radius:8px;">
-              <option>K–1</option>
-              <option>2–3</option>
-              <option selected>4–6</option>
-              <option>7–8</option>
-            </select>
-          </div>
-
-          <div>
-            <label><strong>Length</strong></label><br>
-            <select id="llmLength" style="width:100%; padding:10px; border-radius:8px;">
-              <option value="short">Short</option>
-              <option value="medium" selected>Medium</option>
-              <option value="long">Long</option>
-            </select>
-          </div>
-
-          <div>
-            <label><strong>Content Area</strong></label><br>
-            <input id="llmContentArea" type="text" placeholder="e.g., Science, History, Nature"
-              style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;">
-          </div>
-        </div>
-
-        <label><strong>Teacher Focus Area (black box)</strong></label>
-        <textarea id="llmFocus" rows="3"
-          style="width:100%; padding:12px; border-radius:10px; background:#111827; color:#f9fafb; border:1px solid #374151; font-family:inherit;"
-          placeholder="Type focus here (e.g., prefixes un-/re-, context clues, inference, decoding multisyllabic words)"></textarea>
-
-        <div style="margin-top:14px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
-          <strong>Include Activities:</strong>
-          <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:8px; margin-top:8px;">
-            <label><input type="checkbox" class="act-option" value="Word ladder activity" checked> Word ladder</label>
-            <label><input type="checkbox" class="act-option" value="Semantically related word lists for each target word" checked> Semantic word lists</label>
-            <label><input type="checkbox" class="act-option" value="Gap-fill activity" checked> Gap fill</label>
-            <label><input type="checkbox" class="act-option" value="Story using semantically related words for each morphology target" checked> Semantic story</label>
-            <label><input type="checkbox" class="act-option" value="Story with comprehension questions and answer key" checked> Story + comprehension</label>
-            <label><input type="checkbox" class="act-option" value="Sentence frames activity"> Sentence frames</label>
-            <label><input type="checkbox" class="act-option" value="Suggested word ladder sequence with teacher notes"> Suggested ladder + notes</label>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:16px 0;">
-          <select id="llmProvider" style="padding:10px 14px; font-size:1rem; border-radius:8px;">
-            <option value="gemini" selected>Gemini</option>
-            <option value="chatgpt">ChatGPT</option>
-            <option value="claude">Claude</option>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:14px 0;">
+        <div>
+          <label><strong>Prompt Type</strong></label><br>
+          <select id="llmTextType" style="width:100%; padding:10px; border-radius:8px;">
+            <option value="informational">Informational Text</option>
+            <option value="fiction">Fiction Text</option>
+            <option value="both" selected>Both (Info + Fiction)</option>
           </select>
-
-          <button onclick="generateWithLLM()" style="padding:12px 18px; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer;">Generate Prompt</button>
-          <button onclick="copyLLMPrompt()" style="padding:12px 18px; font-weight:600; background:#0f766e; color:white; border:none; border-radius:8px; cursor:pointer;">Copy Prompt</button>
-          <button onclick="openInLLM()" style="padding:12px 18px; font-weight:600; background:#7c3aed; color:white; border:none; border-radius:8px; cursor:pointer;">Open in Selected LLM</button>
-          <button onclick="clearLLMForm()" style="padding:12px 18px; font-weight:600; background:#dc2626; color:white; border:none; border-radius:8px; cursor:pointer;">Clear</button>
-          <button onclick="refreshPage()" style="padding:12px 18px; font-weight:600; background:#111827; color:white; border:none; border-radius:8px; cursor:pointer;">Refresh Page</button>
         </div>
+        <div>
+          <label><strong>Grade Level</strong></label><br>
+          <select id="llmGrade" style="width:100%; padding:10px; border-radius:8px;">
+            <option>K–1</option>
+            <option>2–3</option>
+            <option selected>4–6</option>
+            <option>7–8</option>
+          </select>
+        </div>
+        <div>
+          <label><strong>Length</strong></label><br>
+          <select id="llmLength" style="width:100%; padding:10px; border-radius:8px;">
+            <option value="short">Short</option>
+            <option value="medium" selected>Medium</option>
+            <option value="long">Long</option>
+          </select>
+        </div>
+        <div>
+          <label><strong>Content Area</strong></label><br>
+          <input id="llmContentArea" type="text" placeholder="e.g., Industrial Revolution, Classical Greece, Photosynthesis, Ancient Rome"
+            style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;">
+        </div>
+      </div>
 
-        <p id="llmStatus" style="text-align:center; font-weight:600; min-height:24px;"></p>
+      <label><strong>Teacher Focus Area (black box)</strong></label>
+      <textarea id="llmFocus" rows="3" style="width:100%; padding:12px; border-radius:10px; background:#111827; color:#f9fafb; border:1px solid #374151; font-family:inherit;"
+        placeholder="Type focus here (e.g., prefixes un-/re-, context clues, inference, decoding multisyllabic words)"></textarea>
 
-        <textarea id="finalPrompt" rows="16"
-          style="width:100%; padding:14px; font-family:monospace; border:2px solid #d1d5db; border-radius:10px; background:#f9fafb;"
-          placeholder="Generated prompt appears here..."></textarea>
+      <div style="margin-top:14px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+        <strong>Include Activities:</strong>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:8px; margin-top:8px;">
+          <label><input type="checkbox" class="act-option" value="Word ladder activity" checked> Word ladder</label>
+          <label><input type="checkbox" class="act-option" value="Semantically related word lists for each target word" checked> Semantic word lists (5 per word)</label>
+          <label><input type="checkbox" class="act-option" value="Gap-fill activity" checked> Gap fill (2 per word)</label>
+          <label><input type="checkbox" class="act-option" value="Quick answer key" checked> Quick answer key</label>
+          <label><input type="checkbox" class="act-option" value="Story with comprehension questions and answer key" checked> Story + comprehension</label>
+          <label><input type="checkbox" class="act-option" value="Sentence frames activity"> Sentence frames (10 frames)</label>
+          <label><input type="checkbox" class="act-option" value="Suggested differentiation notes"> Suggested differentiation notes</label>
+        </div>
+      </div>
+
+       <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:16px 0;">
+        <select id="llmProvider" style="padding:10px 14px; font-size:1rem; border-radius:8px;">
+          <option value="gemini" selected>Gemini</option>
+          <option value="chatgpt">ChatGPT</option>
+          <option value="claude">Claude</option>
+        </select>
+        <button onclick="generateWithLLM()" style="padding:12px 18px; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer;">Generate Prompt</button>
+        <button onclick="copyLLMPrompt()" style="padding:12px 18px; font-weight:600; background:#0f766e; color:white; border:none; border-radius:8px; cursor:pointer;">Copy Prompt</button>
+        <button onclick="openInLLM()" style="padding:12px 18px; font-weight:600; background:#7c3aed; color:white; border:none; border-radius:8px; cursor:pointer;">Open in Selected LLM</button>
+        <button onclick="clearLLMForm()" style="padding:12px 18px; font-weight:600; background:#dc2626; color:white; border:none; border-radius:8px; cursor:pointer;">Clear</button>
+        <button onclick="refreshPage()" style="padding:12px 18px; font-weight:600; background:#111827; color:white; border:none; border-radius:8px; cursor:pointer;">Refresh Page</button>
+      </div>
+
+      <p id="llmStatus" style="text-align:center; font-weight:600; min-height:24px;"></p>
+      <textarea id="finalPrompt" rows="16" style="width:100%; padding:14px; font-family:monospace; border:2px solid #d1d5db; border-radius:10px; background:#f9fafb;" placeholder="Generated prompt appears here..."></textarea>
 
         <!-- === EMBEDDED AI SECTION === -->
         <hr style="margin:30px 0 20px 0;">
@@ -558,8 +549,8 @@
         long: "450–700 words per text"
       };
 
-      let prompt = `You are an expert literacy teacher and curriculum writer.\n\n`;
-      prompt += `TARGET WORDS (use all naturally):\n${words.join("\n")}\n\n`;
+      let prompt = `You are an expert literacy teacher and curriculum writer specializing in morphology instruction.\n\n`;
+      prompt += `TARGET WORDS (use ALL naturally and repeatedly):\n${words.join("\n")}\n\n`;
       prompt += `SETTINGS:\n`;
       prompt += `- Text type: ${cfg.textType}\n`;
       prompt += `- Grade band: ${cfg.grade}\n`;
@@ -568,33 +559,51 @@
       prompt += `- Teacher focus area: ${cfg.focus || "Morphology, meaning, and usage"}\n\n`;
 
       prompt += `REQUIRED OUTPUT:\n`;
-      if (cfg.textType === "informational") {
-        prompt += `1) Write one informational text.\n`;
-      } else if (cfg.textType === "fiction") {
-        prompt += `1) Write one fiction text.\n`;
-      } else {
-        prompt += `1) Write BOTH:\n   - one informational text\n   - one fiction text\n`;
+
+      // Text generation (only applies strongly to story/comprehension)
+      if (cfg.activities.some(a => a.includes("Story with comprehension"))) {
+        if (cfg.textType === "informational") {
+          prompt += `1) Write one engaging informational text.\n`;
+        } else if (cfg.textType === "fiction") {
+          prompt += `1) Write one engaging fiction story.\n`;
+        } else {
+          prompt += `1) Write BOTH:\n   - One informational text\n   - One fiction story\n`;
+        }
+      } else if (cfg.textType !== "both") {
+        prompt += `1) Write one ${cfg.textType} text incorporating the target words.\n`;
       }
 
+      // Per-word requirements
       prompt += `2) For EACH target word, provide:\n`;
-      prompt += `   - student-friendly meaning\n`;
-      prompt += `   - morpheme breakdown (prefix/base/suffix where relevant)\n`;
-      prompt += `   - 2 semantically related words\n\n`;
+      prompt += `   - Student-friendly definition\n`;
+      prompt += `   - Morpheme breakdown (prefix/base/suffix)\n`;
+      prompt += `   - 5 semantically related words\n\n`;
 
+      // Activities
       if (cfg.activities.length) {
-        prompt += `3) Create these activities:\n`;
+        prompt += `3) Create the following activities:\n`;
         cfg.activities.forEach((a, i) => {
-          prompt += `   ${i + 1}. ${a}\n`;
+          if (a.includes("Word ladder")) {
+            prompt += `   ${i+1}. Word ladder activity using the target words.\n`;
+          } else if (a.includes("Gap-fill")) {
+            prompt += `   ${i+1}. Gap-fill activity with 2 gaps for each target word.\n`;
+          } else if (a.includes("Sentence frames")) {
+            prompt += `   ${i+1}. 10 sentence frames using the target words.\n`;
+          } else if (a.includes("Semantic word lists")) {
+            prompt += `   ${i+1}. Semantically related word lists (already covered in per-word section).\n`;
+          } else {
+            prompt += `   ${i+1}. ${a}\n`;
+          }
         });
         prompt += `\n`;
       }
 
-      prompt += `4) Add teacher supports:\n`;
-      prompt += `   - differentiation tips (below/at/above level)\n`;
-      prompt += `   - quick answer key\n`;
-      prompt += `   - printable-friendly formatting with clear headings\n\n`;
-      prompt += `Use clear, engaging, classroom-ready language.`;
+      prompt += `4) Teacher supports:\n`;
+      prompt += `   - Suggested differentiation notes (below/at/above level)\n`;
+      prompt += `   - Quick answer key for all activities\n`;
+      prompt += `   - Printable-friendly formatting with clear headings and sections\n\n`;
 
+      prompt += `Use clear, engaging, classroom-ready language appropriate for the grade level.`;
       return prompt;
     }
 
@@ -602,8 +611,6 @@
       const raw = document.getElementById("llmInput")?.value.trim() || "";
       const status = document.getElementById("llmStatus");
       const out = document.getElementById("finalPrompt");
-
-      if (!status || !out) return;
 
       if (!raw) {
         status.style.color = "red";
@@ -625,7 +632,7 @@
 
       out.value = buildPromptText(words, cfg);
       status.style.color = "#15803d";
-      status.textContent = `✅ Prompt ready (${words.length} words, ${activities.length} activities selected).`;
+      status.textContent = `✅ Prompt ready (${words.length} words, ${activities.length} activities).`;
     }
 
     function copyLLMPrompt() {
