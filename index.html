@@ -47,13 +47,24 @@
 .info-card ul {
   font-size: 1.08rem;
   font-weight: 600;
-  line-height: 1.45;   /* was 1.85 */
-  padding-left: 26px;
-  margin: 0;           /* cleaner vertical spacing */
+  line-height: 1.45;
+  padding-left: 22px;
+  margin: 0;
+
+  column-count: 2;      /* split into 2 columns */
+  column-gap: 40px;     /* space between columns */
 }
 
 .info-card li {
-  margin-bottom: 6px;  /* was 14px */
+  margin-bottom: 6px;
+  break-inside: avoid;  /* keeps each bullet together */
+}
+
+/* On small screens, go back to 1 column */
+@media (max-width: 900px) {
+  .info-card ul {
+    column-count: 1;
+  }
 }
 
     .tabs { display:flex; justify-content:center; gap:12px; margin:28px 0 20px 0; flex-wrap:wrap; } /* Reduced margin */
@@ -179,12 +190,12 @@
     <!-- LLM Tab -->
     <div id="llm-generator" class="tab-content">
   <div style="max-width:950px; margin:0 auto;">
-    <h2 style="text-align:center; color:#1d4ed8;">🪄 AI Prompt Generator</h2>
+    <h2 style="text-align:center; color:#1d4ed8;">🪄 AI Prompt Generator (edit the prompt as you see fit, copy and paste it to your referred AI</h2>
     <p style="text-align:center;">Paste 5–20 words (one per line), generate prompt, then open external AI.</p>
 
     <textarea id="llmInput" rows="12"
       style="width:100%; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
-      placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract&#10;contract"></textarea>
+      placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;contract"></textarea>
 
     <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:18px 0;">
       <select id="llmTask" style="padding:10px 14px; font-size:1rem; border-radius:8px;">
