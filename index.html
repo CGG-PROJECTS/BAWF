@@ -242,6 +242,7 @@
       const input = document.getElementById("wordInput").value.trim();
       status.style.color = "#6b7280";
       status.textContent = "Processing...";
+
       if (!input) {
         status.style.color = "red";
         status.textContent = "Please paste word-frequency data first.";
@@ -252,6 +253,7 @@
         setTimeout(generateWordCloud, 1000);
         return;
       }
+
       const list = [];
       const lines = input.split(/\r?\n/);
       for (let line of lines) {
@@ -264,16 +266,21 @@
           if (word && freq > 0) list.push([word, freq]);
         }
       }
+
       if (list.length === 0) {
         status.style.color = "red";
         status.textContent = "No valid data. Example: analysis 120";
         return;
       }
+
       list.sort((a,b) => b[1] - a[1]);
+
       const canvas = document.getElementById("wordCanvas");
       canvas.width = 1100;
       canvas.height = 700;
+
       status.textContent = `Generating cloud with ${list.length} words...`;
+
       setTimeout(() => {
         WordCloud(canvas, {
           list: list,
@@ -286,6 +293,7 @@
           minSize: 10,
           shrinkToFit: true
         });
+
         status.style.color = "#15803d";
         status.textContent = `✅ Success! ${list.length} words generated.`;
       }, 100);
