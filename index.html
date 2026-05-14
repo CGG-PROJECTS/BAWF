@@ -176,30 +176,48 @@
 
     <!-- LLM Tab -->
     <div id="llm-generator" class="tab-content">
-      <div style="max-width:900px; margin:0 auto;">
-        <h2 style="text-align:center; color:#1d4ed8;">🪄 Stories & Teacher Worksheets</h2>
-        <p style="text-align:center;">Paste 5–20 words (one per line) from the BAWF tables</p>
-        
-        <textarea id="llmInput" rows="12"
-          style="width:100%; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
-          placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract&#10;contract"></textarea>
+  <div style="max-width:950px; margin:0 auto;">
+    <h2 style="text-align:center; color:#1d4ed8;">🪄 AI Prompt Generator</h2>
+    <p style="text-align:center;">Paste 5–20 words (one per line), generate prompt, then open external AI.</p>
 
-        <div style="text-align:center; margin:20px 0;">
-          <select id="llmTask" style="padding:10px 20px; font-size:1.05rem; border-radius:8px; margin-right:10px;">
-            <option value="story">Little Story</option>
-            <option value="worksheet" selected>Teacher Worksheet</option>
-            <option value="both">Both Story + Worksheet</option>
-          </select>
-          <button onclick="generateWithLLM()"
-            style="padding:14px 36px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:10px; cursor:pointer;">
-            Generate Prompt Inside This Page
-          </button>
-        </div>
+    <textarea id="llmInput" rows="12"
+      style="width:100%; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
+      placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract&#10;contract"></textarea>
 
-        <p id="llmStatus" style="text-align:center; font-weight:500; min-height:28px;"></p>
-        <div id="llmResult" style="display:none; background:#f8fafc; padding:25px; border-radius:12px; border:1px solid #e5e7eb; margin-top:20px;"></div>
-      </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:18px 0;">
+      <select id="llmTask" style="padding:10px 14px; font-size:1rem; border-radius:8px;">
+        <option value="story">Little Story</option>
+        <option value="worksheet" selected>Teacher Worksheet</option>
+        <option value="both">Story + Worksheet</option>
+      </select>
+
+      <select id="llmProvider" style="padding:10px 14px; font-size:1rem; border-radius:8px;">
+        <option value="gemini" selected>Gemini</option>
+        <option value="chatgpt">ChatGPT</option>
+        <option value="claude">Claude</option>
+      </select>
+
+      <button onclick="generateWithLLM()"
+        style="padding:12px 18px; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer;">
+        Generate Prompt
+      </button>
+      <button onclick="copyLLMPrompt()"
+        style="padding:12px 18px; font-weight:600; background:#0f766e; color:white; border:none; border-radius:8px; cursor:pointer;">
+        Copy Prompt
+      </button>
+      <button onclick="openInLLM()"
+        style="padding:12px 18px; font-weight:600; background:#7c3aed; color:white; border:none; border-radius:8px; cursor:pointer;">
+        Open in Selected LLM
+      </button>
     </div>
+
+    <p id="llmStatus" style="text-align:center; font-weight:600; min-height:24px;"></p>
+
+    <textarea id="finalPrompt" rows="14" readonly
+      style="width:100%; padding:14px; font-family:monospace; border:2px solid #d1d5db; border-radius:10px; background:#f9fafb;"
+      placeholder="Generated prompt appears here..."></textarea>
+  </div>
+</div>
 
     <footer style="text-align:center; margin-top:48px; color:#6b7280;">
       <p>Hosted via Microsoft Excel Online</p>
@@ -218,144 +236,165 @@
   </div>
 
   <script>
-    let wordCloudReady = false;
-    window.addEventListener("load", () => {
-      setTimeout(() => { if (typeof WordCloud === "function") wordCloudReady = true; }, 800);
-    });
+  let wordCloudReady = false;
+  window.addEventListener("load", () => {
+    setTimeout(() => { if (typeof WordCloud === "function") wordCloudReady = true; }, 800);
+  });
 
-    function openTab(tabName, btnEl) {
-      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-      document.getElementById(tabName).classList.add("active");
-      if (btnEl) btnEl.classList.add("active");
+  function openTab(tabName, btnEl) {
+    document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+    const tab = document.getElementById(tabName);
+    if (tab) tab.classList.add("active");
+    if (btnEl) btnEl.classList.add("active");
+  }
+
+  function showColumnKey() {
+    document.getElementById("columnModal").style.display = "block";
+  }
+  function closeModal() {
+    document.getElementById("columnModal").style.display = "none";
+  }
+
+  function generateWordCloud() {
+    const status = document.getElementById("cloudStatus");
+    const input = document.getElementById("wordInput").value.trim();
+    status.style.color = "#6b7280";
+    status.textContent = "Processing...";
+
+    if (!input) {
+      status.style.color = "red";
+      status.textContent = "Please paste word-frequency data first.";
+      return;
+    }
+    if (!wordCloudReady && typeof WordCloud !== "function") {
+      status.textContent = "Loading Word Cloud...";
+      setTimeout(generateWordCloud, 1000);
+      return;
     }
 
-    function showColumnKey() {
-      document.getElementById("columnModal").style.display = "block";
-    }
-    function closeModal() {
-      document.getElementById("columnModal").style.display = "none";
-    }
-
-    function generateWordCloud() {
-      const status = document.getElementById("cloudStatus");
-      const input = document.getElementById("wordInput").value.trim();
-      status.style.color = "#6b7280";
-      status.textContent = "Processing...";
-
-      if (!input) {
-        status.style.color = "red";
-        status.textContent = "Please paste word-frequency data first.";
-        return;
+    const list = [];
+    const lines = input.split(/\r?\n/);
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) continue;
+      const match = line.match(/^(.*?)\s+(-?\d*\.?\d+)$/);
+      if (match) {
+        const word = match[1].trim();
+        const freq = parseFloat(match[2]);
+        if (word && freq > 0) list.push([word, freq]);
       }
-      if (!wordCloudReady && typeof WordCloud !== "function") {
-        status.textContent = "Loading Word Cloud...";
-        setTimeout(generateWordCloud, 1000);
-        return;
-      }
-
-      const list = [];
-      const lines = input.split(/\r?\n/);
-      for (let line of lines) {
-        line = line.trim();
-        if (!line) continue;
-        const match = line.match(/^(.*?)\s+(-?\d*\.?\d+)$/);
-        if (match) {
-          const word = match[1].trim();
-          const freq = parseFloat(match[2]);
-          if (word && freq > 0) list.push([word, freq]);
-        }
-      }
-
-      if (list.length === 0) {
-        status.style.color = "red";
-        status.textContent = "No valid data. Example: analysis 120";
-        return;
-      }
-
-      list.sort((a,b) => b[1] - a[1]);
-
-      const canvas = document.getElementById("wordCanvas");
-      canvas.width = 1100;
-      canvas.height = 700;
-
-      status.textContent = `Generating cloud with ${list.length} words...`;
-
-      setTimeout(() => {
-        WordCloud(canvas, {
-          list: list,
-          gridSize: 8,
-          weightFactor: 22,
-          fontFamily: "Segoe UI, Arial, sans-serif",
-          color: "random-dark",
-          rotateRatio: 0.3,
-          backgroundColor: "#ffffff",
-          minSize: 10,
-          shrinkToFit: true
-        });
-
-        status.style.color = "#15803d";
-        status.textContent = `✅ Success! ${list.length} words generated.`;
-      }, 100);
     }
 
-    // === LLM GENERATOR ===
-    function generateWithLLM() {
-      const input = document.getElementById("llmInput").value.trim();
-      const task = document.getElementById("llmTask").value;
-      const status = document.getElementById("llmStatus");
-      const resultDiv = document.getElementById("llmResult");
+    if (list.length === 0) {
+      status.style.color = "red";
+      status.textContent = "No valid data. Example: analysis 120";
+      return;
+    }
 
-      if (!input) {
-        status.style.color = "red";
-        status.textContent = "❌ Please paste some words first.";
-        return;
-      }
+    list.sort((a, b) => b[1] - a[1]);
+    const canvas = document.getElementById("wordCanvas");
+    canvas.width = 1100;
+    canvas.height = 700;
+    status.textContent = `Generating cloud with ${list.length} words...`;
 
-      status.style.color = "#1d4ed8";
-      status.textContent = "✅ Building prompt...";
-
-      let prompt = `You are a creative and experienced elementary/middle school teacher who specializes in morphology and vocabulary instruction.\n\n`;
-      prompt += `Target words (use all of them naturally):\n${input}\n\n`;
-
-      if (task === "story") {
-        prompt += `Write a fun, engaging short story (250-400 words) for students that naturally includes all these words.`;
-      } else if (task === "worksheet") {
-        prompt += `Create a complete, ready-to-use teacher worksheet. Include: word matrix, fill-in-the-blanks, sentence creation exercises, morphology questions, and a short reading passage.`;
-      } else {
-        prompt += `Create BOTH a fun short story AND a matching teacher worksheet using all the target words.`;
-      }
-
-      prompt += `\n\nTarget grade level: Grade 4-6.`;
-      prompt += `\nMake the language clear, educational, and enjoyable for students.`;
-      prompt += `\nUse clear headings and format it nicely for teachers.`;
-
-      resultDiv.innerHTML = `
-        <strong>✅ Your Prompt is Ready</strong><br><br>
-        <textarea id="finalPrompt" style="width:100%; height:320px; padding:15px; font-family:monospace; border-radius:8px; border:1px solid #ccc; resize:vertical;">${prompt}</textarea><br><br>
-        <div style="text-align:center;">
-          <button onclick="copyLLMPrompt()" style="padding:12px 28px; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
-            📋 Copy Prompt
-          </button>
-        </div>
-      `;
-
-      resultDiv.style.display = "block";
+    setTimeout(() => {
+      WordCloud(canvas, {
+        list,
+        gridSize: 8,
+        weightFactor: 22,
+        fontFamily: "Segoe UI, Arial, sans-serif",
+        color: "random-dark",
+        rotateRatio: 0.3,
+        backgroundColor: "#ffffff",
+        minSize: 10,
+        shrinkToFit: true
+      });
       status.style.color = "#15803d";
-      status.textContent = "✅ Prompt generated below. Copy and paste into any LLM.";
+      status.textContent = `✅ Success! ${list.length} words generated.`;
+    }, 100);
+  }
+
+  function buildPromptText(words, task) {
+    let prompt = `You are an expert elementary/middle literacy teacher focused on morphology and vocabulary instruction.\n\n`;
+    prompt += `Target words (use all naturally):\n${words.join("\n")}\n\n`;
+
+    if (task === "story") {
+      prompt += `Write a fun, engaging short story (250-400 words) using all target words.\n`;
+    } else if (task === "worksheet") {
+      prompt += `Create a ready-to-use teacher worksheet with:\n`;
+      prompt += `- word study/morphology section\n- fill-in-the-blanks\n- sentence creation\n- 5 comprehension questions\n- answer key\n`;
+    } else {
+      prompt += `Create BOTH:\n1) A short story (250-400 words)\n2) A matching worksheet with answer key\n`;
     }
 
-    function copyLLMPrompt() {
-      const textarea = document.getElementById("finalPrompt");
-      if (textarea) {
-        textarea.select();
-        document.execCommand("copy");
-        const btn = event.target;
-        const original = btn.textContent;
-        btn.textContent = "✅ Copied!";
-        setTimeout(() => btn.textContent = original, 2000);
-      }
+    prompt += `\nGrade band: 4-6.\nUse clear headings and student-friendly language.`;
+    return prompt;
+  }
+
+  function generateWithLLM() {
+    const raw = document.getElementById("llmInput").value.trim();
+    const task = document.getElementById("llmTask").value;
+    const status = document.getElementById("llmStatus");
+    const out = document.getElementById("finalPrompt");
+
+    if (!raw) {
+      status.style.color = "red";
+      status.textContent = "❌ Please paste words first.";
+      return;
     }
-  </script>
+
+    const words = raw.split(/\r?\n|,/).map(w => w.trim()).filter(Boolean);
+    const prompt = buildPromptText(words, task);
+
+    out.value = prompt;
+    status.style.color = "#15803d";
+    status.textContent = `✅ Prompt ready (${words.length} words). Copy it or open in selected LLM.`;
+  }
+
+  function copyLLMPrompt() {
+    const out = document.getElementById("finalPrompt");
+    const status = document.getElementById("llmStatus");
+    if (!out.value.trim()) {
+      status.style.color = "red";
+      status.textContent = "❌ Generate a prompt first.";
+      return;
+    }
+    navigator.clipboard.writeText(out.value).then(() => {
+      status.style.color = "#15803d";
+      status.textContent = "✅ Prompt copied.";
+    }).catch(() => {
+      status.style.color = "red";
+      status.textContent = "❌ Copy failed. Please copy manually.";
+    });
+  }
+
+  function openInLLM() {
+    const prompt = document.getElementById("finalPrompt").value.trim();
+    const provider = document.getElementById("llmProvider").value;
+    const status = document.getElementById("llmStatus");
+
+    if (!prompt) {
+      status.style.color = "red";
+      status.textContent = "❌ Generate a prompt first.";
+      return;
+    }
+
+    let url = "";
+    if (provider === "gemini") url = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
+    if (provider === "chatgpt") url = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
+    if (provider === "claude") url = `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+
+    const w = window.open(url, "_blank");
+    if (!w) {
+      status.style.color = "red";
+      status.textContent = "❌ Popup blocked. Copy prompt and paste manually.";
+    } else {
+      status.style.color = "#15803d";
+      status.textContent = "✅ Opened in new tab.";
+    }
+  }
+</script>
+
 </body>
 </html>
