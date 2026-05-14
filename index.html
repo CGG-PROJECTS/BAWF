@@ -684,8 +684,8 @@
 
     // Prefer smaller models first (better chance on school laptops)
     const preferred = list
-      .filter(m => /1B|1\.5B|2B|3B|mini|small|q4/i.test(m.model_id))
-      .slice(0, 12);
+      .filter(m => (llama-3\.2.*(1b|3b)|qwen2\.5.*(1\.5b|3b)|phi-3.*mini|smollm)/i.test(m.model_id)
+);
 
     const source = preferred.length ? preferred : list.slice(0, 20);
 
@@ -785,6 +785,8 @@
     chatEl().innerHTML = "";
     setStatus("Chat reset.", "#374151");
   }
+<button id="sendBtn">Send</button>
+<button id="stopBtn" disabled>Stop</button>
 
   // Expose to your inline onclick handlers
   window.initWebLLM = initWebLLMInternal;
@@ -793,6 +795,9 @@
 
   populateModels();
   setStatus("Select a model, then click Load Model.");
+<button id="sendBtn">Send</button>
+<button id="stopBtn" disabled>Stop</button>
+
 </script>
 
 
