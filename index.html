@@ -261,6 +261,15 @@
       <button onclick="generateWithLLM()" style="padding:12px 18px; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer;">Generate Prompt</button>
       <button onclick="copyLLMPrompt()" style="padding:12px 18px; font-weight:600; background:#0f766e; color:white; border:none; border-radius:8px; cursor:pointer;">Copy Prompt</button>
       <button onclick="openInLLM()" style="padding:12px 18px; font-weight:600; background:#7c3aed; color:white; border:none; border-radius:8px; cursor:pointer;">Open in Selected LLM</button>
+        <button onclick="clearLLMForm()"
+  style="padding:12px 18px; font-weight:600; background:#dc2626; color:white; border:none; border-radius:8px; cursor:pointer;">
+  Clear
+</button>
+
+<button onclick="refreshPage()"
+  style="padding:12px 18px; font-weight:600; background:#111827; color:white; border:none; border-radius:8px; cursor:pointer;">
+  Refresh Page
+</button>
     </div>
 
     <p id="llmStatus" style="text-align:center; font-weight:600; min-height:24px;"></p>
@@ -480,7 +489,85 @@ function generateWithLLM() {
     status.textContent = "❌ Please paste target words first.";
     return;
   }
+function copyLLMPrompt() {
+  const out = document.getElementById("finalPrompt");
+  const status = document.getElementById("llmStatus");
 
+  if (!out.value.trim()) {
+    status.style.color = "red";
+    status.textContent = "❌ Generate a prompt first.";
+    return;
+  }
+
+  navigator.clipboard.writeText(out.value).then(() => {
+    status.style.color = "#15803d";
+    status.textContent = "✅ Prompt copied.";
+  }).catch(() => {
+    status.style.color = "red";
+    status.textContent = "❌ Copy failed. Please copy manually.";
+  });
+}
+
+function openInLLM() {
+  const prompt = document.getElementById("finalPrompt").value.trim();
+  const provider = document.getElementById("llmProvider").value;
+  const status = document.getElementById("llmStatus");
+
+  if (!prompt) {
+    status.style.color = "red";
+    status.textContent = "❌ Generate a prompt first.";
+    return;
+  }
+
+  const encoded = encodeURIComponent(prompt);
+  let url = "";
+
+  if (provider === "gemini") url = `https://gemini.google.com/app?prompt=${encoded}`;
+  if (provider === "chatgpt") url = `https://chatgpt.com/?q=${encoded}`;
+  if (provider === "claude") url = `https://claude.ai/new`; // Claude often ignores URL prompt params
+
+  const w = window.open(url, "_blank");
+  if (!w) {
+    status.style.color = "red";
+    status.textContent = "❌ Popup blocked. Allow popups, then try again.";
+    return;
+  }
+
+  // Helpful fallback: copy prompt automatically
+  navigator.clipboard.writeText(prompt).then(() => {
+    status.style.color = "#15803d";
+    if (provider === "claude") {
+      status.textContent = "✅ Opened Claude. Prompt copied — paste it into Claude.";
+    } else {
+      status.textContent = "✅ Opened in new tab.";
+    }
+  }).catch(() => {
+    status.style.color = "#15803d";
+    status.textContent = "✅ Opened in new tab.";
+  });
+}
+
+function clearLLMForm() {
+  document.getElementById("llmInput").value = "";
+  document.getElementById("llmContentArea").value = "";
+  document.getElementById("llmFocus").value = "";
+  document.getElementById("finalPrompt").value = "";
+  document.getElementById("llmStatus").textContent = "";
+
+  // Reset selects to defaults
+  document.getElementById("llmTextType").value = "informational";
+  document.getElementById("llmGrade").value = "4–6";
+  document.getElementById("llmLength").value = "medium";
+  document.getElementById("llmProvider").value = "gemini";
+
+  // Reset activity checkboxes (first 5 checked, rest unchecked)
+  const checks = document.querySelectorAll(".act-option");
+  checks.forEach((c, i) => c.checked = i < 5);
+}
+
+function refreshPage() {
+  location.reload();
+}
   const words = raw.split(/\r?\n|,/).map(w => w.trim()).filter(Boolean);
   const activities = Array.from(document.querySelectorAll(".act-option:checked")).map(el => el.value);
 
