@@ -4,115 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BAWF Morphological Database</title>
- 
+  
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
- 
+  
   <style>
     body { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(to bottom, #fdfdfd, #f8f8f8); color:#111827; }
-    .container {
-      max-width: min(2400px, 98vw);
-      margin: 20px auto;
-      padding: 36px 40px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-    }
+    .container { max-width:1800px; margin:32px auto; padding:32px 24px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
     header { text-align:center; margin-bottom:20px; }
     h1 { margin:0 0 12px 0; font-size:2.8rem; color:#1d4ed8; font-weight:700; }
     .tagline { font-size:1.25rem; color:#4b5563; max-width:900px; margin:0 auto 24px auto; }
     .key-btn { display:inline-block; padding:12px 24px; background:#1d4ed8; color:white; font-weight:600; border-radius:8px; cursor:pointer; margin:20px 0; text-align:center; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
     .key-btn:hover { background:#1e40af; }
 
+    /* Visual Banner */
     .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:30px 0 40px 0; }
-    .visual-aid {
-      width: 180px;
-      height: 110px;
-      object-fit: cover;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-    .visual-aid:hover { transform: scale(1.03); }
+.visual-aid {
+  width: 180px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+.visual-aid:hover { transform: scale(1.03); }
 
+
+    /* Info Card */
     .info-card {
       background: #f0f4f8;
       border-radius: 12px;
-      padding: 30px 34px;
-      margin: 30px 0;
-      width: 100%;
+      padding: 24px;
+      margin: 30px auto;
+      max-width: 1100px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    .info-card ul { line-height: 1.7; padding-left: 22px; }
-    @media (min-width: 1200px) {
-      .info-card ul { columns: 2; column-gap: 40px; }
-      .info-card li { break-inside: avoid; margin-bottom: 10px; }
-    }
+    .info-card h3 { color:#1d4ed8; margin-top:0; }
 
     .tabs { display:flex; justify-content:center; gap:12px; margin:32px 0; flex-wrap:wrap; }
     .tab-btn { padding:12px 28px; font-size:1.1rem; font-weight:600; background:#e5e7eb; color:#374151; border:none; border-radius:8px 8px 0 0; cursor:pointer; }
     .tab-btn.active { background:#1d4ed8; color:white; }
     .tab-content { display:none; padding:24px; }
     .tab-content.active { display:block; }
-
     .download-section { text-align:center; margin:20px 0; }
     .download-btn { display:inline-flex; align-items:center; gap:12px; padding:14px 32px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; text-decoration:none; border-radius:10px; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
     .download-btn:hover { background:#1e40af; transform:translateY(-2px); }
-
     iframe { width:100%; height:85vh; min-height:700px; border:none; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
-
     .loading-note { text-align:center; font-size:1.1rem; color:#6b7280; background:#f0f4f8; padding:16px; border-radius:8px; margin:20px 0; }
 
     #wordInput { width: 90%; max-width: 900px; height: 220px; padding: 16px; font-family: ui-monospace, monospace; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 10px; resize: vertical; background: #f9fafb; }
+    #generateBtn { margin-top: 12px; padding: 14px 40px; font-size: 1.05rem; font-weight: 600; background: #1d4ed8; color: white; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(29,78,216,0.25); }
+    #generateBtn:hover { background:#1e40af; }
     #wordCanvas { display: block; margin: 24px auto 0 auto; max-width: 100%; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); background: white; }
 
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); overflow-y:auto; }
     .modal-content { background-color:#fff; margin:40px auto; padding:30px; border-radius:12px; max-width:980px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
     .modal-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e5e7eb; padding-bottom:15px; margin-bottom:20px; }
+    .modal-header h2 { margin:0; color:#1d4ed8; }
     .close { font-size:2rem; font-weight:bold; color:#888; cursor:pointer; }
     .close:hover { color:#111; }
-
-    /* Studio Styles */
-    .studio-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-    .studio-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
-    .studio-input {
-      width:100%;
-      padding:12px;
-      border:2px solid #d1d5db;
-      border-radius:10px;
-      font-size:1rem;
-      font-family:inherit;
-      background:#f9fafb;
-      box-sizing:border-box;
-    }
-    .studio-btn {
-      padding:10px 16px;
-      border:none;
-      border-radius:10px;
-      background:#1d4ed8;
-      color:white;
-      font-weight:600;
-      cursor:pointer;
-    }
-    .studio-btn:hover { background:#1e40af; }
-    .studio-btn.secondary { background:#0f766e; }
-    .studio-btn.secondary:hover { background:#115e59; }
-    .studio-btn.light { background:#e5e7eb; color:#111827; }
-    .studio-btn.light:hover { background:#d1d5db; }
-
-    @media (max-width: 980px) {
-      .studio-grid, .studio-row { grid-template-columns:1fr; }
-    }
+    .modal- h3 { color:#1d4ed8; margin-top:25px; }
+    .modal- ul { padding-left:20px; line-height:1.7; }
+    .modal- li { margin-bottom:10px; }
   </style>
 </head>
-<body>
+<>
   <div class="container">
     <header>
       <h1>BAWF Morphological Database</h1>
       <div class="tagline">Morphology, roots, affixes, compounds, and etymology — interactive</div>
     </header>
-
+      
+    <!-- YOUR ORIGINAL WORKING VISUAL BANNER -->
     <div class="visual-banner">
-      <!-- Your images remain the same -->
       <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" alt="Word cloud of common English prefixes" class="visual-aid">
       <img src="https://www.shichida.com.au/wp-content/uploads/2023/05/teaching-vocab-feature-1024x683.png" alt="Children engaged in fun vocabulary and word learning" class="visual-aid">
       <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Sign_word_matrix.png" alt="Word matrix showing family relationships" class="visual-aid">
@@ -121,16 +84,27 @@
       <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6_TLO4qHmN4sfx0hFWLJctOFPNZ824WBBrI95Qkh2U-2Z0BtwsRFf_3BVAysdW-s1rXcqfnqwTNTbozzGh2yZTCbGMDPNX_gjXBQI7PyAAEF6pofA-rxF7ImPP5vmlu_vlOhpC1WfJ4Ce/w1200-h630-p-k-no-nu/Prefixes+Posters.png" alt="Fun classroom posters for teaching prefixes and suffixes" class="visual-aid">
     </div>
 
+    <!-- Info Card -->
     <div class="info-card">
       <h3>About this Database</h3>
       <ul>
-        <!-- Your list remains unchanged -->
-        <li>Explore English word families...</li>
+        <li>Explore English word families, compound words, and definitions/etymologies</li>
+        <li>The British and American Word Families (BAWF) is a tool for vocabulary morphology instruction from the primary grades </li>
+        <li>Morphology is the study of how words are built from meaningful units, including bases, roots, prefixes, and suffixes (Hiebert, 2020). A child who understands that the prefix un- means not or reverse does not just know one word; she has a tool for working out the meanings of unhappy, undo, unfair, unknown, unusual, and dozens more. A student who recognizes the Latin root tract is often in words containing meanings such as ‘pull, draw’ is positioned to make more sense of attract, contract, distract, extract, retract, subtract – academic words that span multiple subject areas and grade levels (Coxhead, 2000).</li>
+        <li>Filter or search for words you want and particular morphemes.</li>
+        <li>Use tabs and serach box in the columns below to sort by freqnecy, grade level, or easily filter for morphologically related words</li>
+        <li>Paste word + frequency into the Word Cloud tab to make visuals</li>
+        <li>Use word families to build word walls</li>
+        <li>Use Zipf frequencies to sort for words in the 1st 1000 most frequent words, 2nd 1000 words etc</li>
+        <li>Download individual Excel files for offline use, advanced filtering, or editing. (Download tab is bottom right of spreadsheet)</li>
       </ul>
+      <p style="margin-top: 16px; font-style: italic;">
+        Be inspired by joyful word learning and reading — dive in and explore!
+      </p>
     </div>
 
     <div class="loading-note">
-      <strong>Note:</strong> Interactive tables may take 5–20 seconds to load. Use download buttons for instant access!
+      <strong>Note:</strong> Interactive tables may take 5–20 seconds to load (depending on connection). Use download buttons for instant access!
     </div>
 
     <div style="text-align:center;">
@@ -142,78 +116,153 @@
       <button class="tab-btn" onclick="openTab('compounds', this)">Compound Words</button>
       <button class="tab-btn" onclick="openTab('definitions', this)">Definitions & Etymologies</button>
       <button class="tab-btn" onclick="openTab('wordcloud', this)">Word Cloud Generator</button>
-      <button class="tab-btn" onclick="openTab('llm-generator', this)">🪄 AI Stories & Worksheets</button>
+      <button class="tab-btn" onclick="openTab('llm-generator', this)">🪄 Generate AI Stories & Worksheets!</button>
     </div>
 
-    <!-- === Existing Tabs === -->
-    <div id="word-families" class="tab-content active"> ... (your original) </div>
-    <div id="compounds" class="tab-content"> ... (your original) </div>
-    <div id="definitions" class="tab-content"> ... (your original) </div>
+<!-- Word Families -->
+<div id="word-families" class="tab-content active">
+  <div class="download-section">
+    <a href="https://1drv.ms/x/c/7dd10ea681993770/IQT2pwnY9qT1Q4DGZ2CTL9WVASpMJ3DXzXHX3K2aeEByqhU?download=1"
+       class="download-btn" target="_blank" rel="noopener" download>
+      ↓ Download Word Families Excel
+    </a>
+  </div>
+  <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQT2pwnY9qT1Q4DGZ2CTL9WVASpMJ3DXzXHX3K2aeEByqhU?em=2&AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" frameborder="0" allowfullscreen></iframe>
+</div>
 
+<!-- Compound Words -->
+<div id="compounds" class="tab-content">
+  <div class="download-section">
+    <a href="https://1drv.ms/x/c/7dd10ea681993770/IQTWH_RNq98ZTZ8Xss974f_fATyGvqGhtexUiu7-s8wNu74?download=1"
+       class="download-btn" target="_blank" rel="noopener" download>
+      ↓ Download Compound Words Excel
+    </a>
+  </div>
+  <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQTWH_RNq98ZTZ8Xss974f_fATyGvqGhtexUiu7-s8wNu74?em=2&AllowTyping=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" allow="clipboard-read; clipboard-write" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<!-- Definitions -->
+<div id="definitions" class="tab-content">
+  <div class="download-section">
+    <a href="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?download=1"
+       class="download-btn" target="_blank" rel="noopener" download>
+      ↓ Download Definitions & Etymologies Excel
+    </a>
+  </div>
+  <iframe src="https://1drv.ms/x/c/7dd10ea681993770/IQQsbLYK8J8WQqwzSjZDdcQOAR0Hqje6AOnYUQmE2mri7ZE?em=2&AllowTyping=True&wdHideGridlines=True&wdDownloadButton=True" frameborder="0" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+</div>
+
+
+    <!-- Word Cloud -->
     <div id="wordcloud" class="tab-content">
-      <!-- Your original word cloud tab remains unchanged -->
+      <div style="max-width:900px; margin:0 auto; text-align:center;">
+        <p><strong>Instructions:</strong> Paste Word + Frequency (one per line)</p>
+        <textarea id="wordInput" placeholder="analysis 120&#10;morphology 95&#10;prefix 78"></textarea><br><br>
+        <button id="generateBtn" onclick="generateWordCloud()">Generate Word Cloud</button>
+        <p id="cloudStatus" style="margin-top:12px; font-weight:500;"></p>
+      </div>
+      <canvas id="wordCanvas" width="1100" height="700"></canvas>
     </div>
-
-    <!-- === IMPROVED AI STUDIO TAB === -->
+       <!-- === NEW TAB - Stories & Worksheets (In-Page) === -->
     <div id="llm-generator" class="tab-content">
-      <div style="max-width:1200px; margin:0 auto;">
-        <h2 style="text-align:center; color:#1d4ed8; margin-bottom:8px;">🪄 No-Key AI Prompt Studio</h2>
-        <p style="text-align:center; color:#4b5563;">Build powerful prompts from your BAWF words</p>
+      <div style="max-width:900px; margin:0 auto;">
+        <h2 style="text-align:center; color:#1d4ed8;">🪄 Stories & Teacher Worksheets</h2>
+        <p style="text-align:center;">Paste 5–20 words (one per line) from the BAWF tables</p>
         
-        <div class="studio-grid">
-          <!-- Left side - Inputs -->
-          <div>
-            <label><strong>Target words</strong> (one per line)</label>
-            <textarea id="studioWords" rows="12" class="studio-input" placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract"></textarea>
-            
-            <div class="studio-row">
-              <div>
-                <label><strong>Task type</strong></label>
-                <select id="studioTask" class="studio-input">
-                  <option value="short_story">Short Story</option>
-                  <option value="story_comp">Story + Comprehension Questions</option>
-                  <option value="worksheet">Full Worksheet</option>
-                  <option value="mini_lesson">Morphology Mini-Lesson</option>
-                  <!-- Add more as needed -->
-                </select>
-              </div>
-              <div>
-                <label><strong>Grade band</strong></label>
-                <select id="studioGrade" class="studio-input">
-                  <option>3-5</option>
-                  <option selected>4-6</option>
-                  <option>6-8</option>
-                </select>
-              </div>
-            </div>
+        <textarea id="llmInput" rows="12" 
+          style="width:100%; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
+          placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract&#10;contract"></textarea>
 
-            <button class="studio-btn" onclick="buildStudioPrompt()" style="width:100%; margin-top:12px;">Build Prompt</button>
-          </div>
+        <div style="text-align:center; margin:20px 0;">
+          <select id="llmTask" style="padding:10px 20px; font-size:1.05rem; border-radius:8px; margin-right:10px;">
+            <option value="story">Little Story</option>
+            <option value="worksheet" selected>Teacher Worksheet</option>
+            <option value="both">Both Story + Worksheet</option>
+          </select>
 
-          <!-- Right side - Output -->
-          <div>
-            <label><strong>Generated Prompt</strong></label>
-            <textarea id="studioPrompt" rows="18" class="studio-input" readonly></textarea>
-            
-            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="studio-btn" onclick="openPromptSite('gemini')">Open in Gemini</button>
-              <button class="studio-btn secondary" onclick="openPromptSite('chatgpt')">Open in ChatGPT</button>
-            </div>
-          </div>
+          <button onclick="generateWithLLM()" 
+            style="padding:14px 36px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:10px; cursor:pointer;">
+            Generate Inside This Page
+          </button>
         </div>
+
+        <p id="llmStatus" style="text-align:center; font-weight:500; min-height:28px;"></p>
+
+        <div id="llmResult" style="display:none; background:#f8fafc; padding:25px; border-radius:12px; border:1px solid #e5e7eb; margin-top:20px; white-space:pre-wrap; font-size:1.05rem; line-height:1.6;"></div>
       </div>
     </div>
-
     <footer style="text-align:center; margin-top:48px; color:#6b7280;">
       <p>Hosted via Microsoft Excel Online</p>
     </footer>
   </div>
 
-  <!-- Modal -->
-  <div id="columnModal" class="modal"> ... your modal code ... </div>
+  <!-- Column Key Modal -->
+  <div id="columnModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Column Definitions for the BAWF Morphological Database</h2>
+        <span class="close" onclick="closeModal()">×</span>
+      </div>
+<div class="modal-">
+  <h3>Column Definitions for the BAWF Morphological Database</h3>
+
+  <h3>Core Word Information</h3>
+  <ul>
+    <li><strong>Word:</strong> The surface wordform (as it appears in the dictionary and corpora)</li>
+    <li><strong>Word_frq_Zipf:</strong> Zipf frequency score of the wordform, calculated from a large English corpus (higher value = more frequent in everyday language use).A Zipf value of 1 is approximately 1 occurrence per 100 million words; a value of 2 represents once per 10 million words; 3 once 1 per million words etc. </li>
+    <li><strong>FLemma:</strong> The lemma of the word (ignoring part of speech).</li>
+    <li><strong>GPT_Coded_Word_Parts:</strong> Morphological breakdown of the word into prefixes, root(s), and suffixes, generated by the fine-tuned GPT 4.1 analysis.</li>
+  </ul>
+
+  <h3>Baseword / Root Information</h3>
+  <ul>
+    <li><strong>Baseword:</strong> The central base form of the word after removing affixes.</li>
+    <li><strong>Baseword_frq_Zipf:</strong> Zipf frequency score of the baseword itself.</li>
+    <li><strong>Baseword_Family_Size:</strong> Number of different wordforms that belong to the same baseword family (excluding compounds).</li>
+    <li><strong>Baseword_FamilySize_Incl_Compounds:</strong> Number of different wordforms in the baseword family, including compounds.</li>
+    <li><strong>Baseword_Zipf_Inc_Compounds:</strong> Zipf frequency of the baseword, adjusted to include compounds.</li>
+  </ul>
+
+  <h3>Root & Etymological Information</h3>
+  <ul>
+    <li><strong>GPT_Root:</strong> The primary root identified using GPT-assisted morphological analysis.</li>
+    <li><strong>Avg_Root_Zipf_BNC_COCA:</strong> Average Zipf frequency (based on BNC-COCA data) of words sharing the same root.</li>
+    <li><strong>Root_FamilySize:</strong> Number of different wordforms sharing the same root (excluding compounds).</li>
+    <li><strong>Root_FamilySize_Inc_Compounds:</strong> Number of different wordforms sharing the same root, including compounds.</li>
+    <li><strong>Avg_Root_Zipf_Inc_Compounds:</strong> Average Zipf frequency of words sharing the root, including compounds.</li>
+  </ul>
+
+  <h3>Greek / Latin Roots</h3>
+  <ul>
+    <li><strong>Greek_Latin_Root_1:</strong> First identified classical (Greek or Latin) root.</li>
+    <li><strong>Greek_Latin_Meaning_1:</strong> Meaning of the first classical root.</li>
+    <li><strong>Greek_Latin_Root_1_FamilySize (recompute):</strong> Number of different wordforms containing this classical root.</li>
+    <li><strong>Avg_Greek_Latin_Root_1_Zipf_BNC_COCA:</strong> Average Zipf frequency of words containing the first classical root.</li>
+    <li><strong>Greek_Latin_Root_2:</strong> Second identified classical root (if present).</li>
+    <li><strong>Greek_Latin_Meaning_2:</strong> Meaning of the second classical root.</li>
+    <li><strong>Greek_Latin_Roots_FamilySize_Incl_compounds:</strong> Total family size for classical roots, including compounds.</li>
+    <li><strong>Greek_Latin_Roots_Zipf__Incl_compounds:</strong> Zipf frequency measures for classical roots, including compounds.</li>
+  </ul>
+
+  <h3>Prefixes & Suffixes</h3>
+  <ul>
+    <li><strong>Prefix_1 to Prefix_3 and Suffix_1 to Suffix_6:</strong> Include meaning, all forms, frequency, count, and mean Zipf scores.</li>
+  </ul>
+
+  <h3>Other Morphological & Psycholinguistic Measures</h3>
+  <ul>
+    <li><strong>N_Morphemes:</strong> Total number of morphemes in the word.</li>
+    <li><strong>Reading AoA (Green et al., 2025):</strong> Age of Acquisition for reading this word.</li>
+    <li><strong>Vocabulary eXpected Grade Level (Flor et al., 2024):</strong> Expected U.S. grade level.</li>
+    <li><strong>GPT_Familiarity (Brysbaert et al., 2024):</strong> GPT-estimated familiarity rating.</li>
+  </ul>
+</div>
+
+    </div>
+  </div>
 
   <script>
-    // WordCloud script
+    // WordCloud script (already working)
     let wordCloudReady = false;
     window.addEventListener("load", () => {
       setTimeout(() => { if (typeof WordCloud === "function") wordCloudReady = true; }, 800);
@@ -234,46 +283,108 @@
     }
 
     function generateWordCloud() {
-      // Your original word cloud function (unchanged)
-    }
+      const status = document.getElementById("cloudStatus");
+      const input = document.getElementById("wordInput").value.trim();
+      status.style.color = "#6b7280";
+      status.textContent = "Processing...";
 
-    // === AI Studio Functions ===
-    function buildStudioPrompt() {
-      const wordsRaw = document.getElementById("studioWords").value.trim();
-      if (!wordsRaw) {
-        alert("Please enter some words first.");
+      if (!input) {
+        status.style.color = "red";
+        status.textContent = "Please paste word-frequency data first.";
         return;
       }
-      const task = document.getElementById("studioTask").value;
-      const grade = document.getElementById("studioGrade").value;
-
-      let instruction = "Write a short engaging story using all the target words naturally.";
-      if (task === "story_comp") instruction = "Write a short story using all target words and add 6 comprehension questions.";
-      if (task === "worksheet") instruction = "Create a complete ready-to-use teacher worksheet with multiple activities.";
-      if (task === "mini_lesson") instruction = "Create a short morphology mini-lesson with guided practice.";
-
-      const prompt = `You are an expert teacher specializing in morphology and vocabulary instruction.\n\n` +
-        `Grade level: ${grade}\n` +
-        `Target words:\n${wordsRaw}\n\n` +
-        `${instruction}\n\n` +
-        `Make it educational, engaging, and classroom-ready.`;
-
-      document.getElementById("studioPrompt").value = prompt;
-    }
-
-    function openPromptSite(site) {
-      const prompt = document.getElementById("studioPrompt").value.trim();
-      if (!prompt) {
-        alert("Please build a prompt first.");
+      if (!wordCloudReady && typeof WordCloud !== "function") {
+        status.textContent = "Loading Word Cloud...";
+        setTimeout(generateWordCloud, 1000);
         return;
       }
-      let url = "";
-      if (site === "gemini") url = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
-      if (site === "chatgpt") url = `https://chat.openai.com/?q=${encodeURIComponent(prompt)}`;
-      window.open(url, "_blank");
-    }
 
-    // Add more functions if needed
+      const list = [];
+      const lines = input.split(/\r?\n/);
+      for (let line of lines) {
+        line = line.trim();
+        if (!line) continue;
+        const match = line.match(/^(.*?)\s+(-?\d*\.?\d+)$/);
+        if (match) {
+          const word = match[1].trim();
+          const freq = parseFloat(match[2]);
+          if (word && freq > 0) list.push([word, freq]);
+        }
+      }
+
+      if (list.length === 0) {
+        status.style.color = "red";
+        status.textContent = "No valid data. Example: analysis 120";
+        return;
+      }
+
+      list.sort((a,b) => b[1] - a[1]);
+
+      const canvas = document.getElementById("wordCanvas");
+      canvas.width = 1100;
+      canvas.height = 700;
+
+      status.textContent = `Generating cloud with ${list.length} words...`;
+
+      setTimeout(() => {
+        WordCloud(canvas, {
+          list: list,
+          gridSize: 8,
+          weightFactor: 22,
+          fontFamily: "Segoe UI, Arial, sans-serif",
+          color: "random-dark",
+          rotateRatio: 0.3,
+          backgroundColor: "#ffffff",
+          minSize: 10,
+          shrinkToFit: true
+        });
+
+        status.style.color = "#15803d";
+        status.textContent = `✅ Success! ${list.length} words generated.`;
+      }, 100);
+    }
+          // === NEW FUNCTION - LLM Generator ===
+    function generateWithLLM() {
+  const input = document.getElementById("llmInput").value.trim();
+  const task = document.getElementById("llmTask").value;
+  const status = document.getElementById("llmStatus");
+  const resultDiv = document.getElementById("llmResult");
+
+  if (!input) {
+    status.style.color = "red";
+    status.textContent = "Please paste some words first.";
+    return;
+  }
+
+  status.style.color = "#1d4ed8";
+  status.textContent = "Creating prompt...";
+
+  let prompt = `You are a creative and experienced elementary/middle school teacher who loves teaching morphology.\n\n`;
+  prompt += `Words:\n${input}\n\n`;
+
+  if (task === "story") {
+    prompt += `Write a short, engaging story (250-400 words) for students that naturally includes all these words.`;
+  } else if (task === "worksheet") {
+    prompt += `Create a ready-to-use teacher worksheet using these words. Include word matrix, fill-in-the-blanks, sentence creation, and morphology questions.`;
+  } else {
+    prompt += `Create BOTH a fun short story AND a matching teacher worksheet using these words.`;
+  }
+
+  prompt += `\n\nMake it clear, educational, and age-appropriate for Grade 4-6.`;
+
+  const geminiUrl = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
+  const win = window.open(geminiUrl, "_blank");
+
+  resultDiv.style.display = "block";
+  resultDiv.innerHTML = `
+    <strong>✅ Prompt ready</strong><br><br>
+    ${win ? "<small>Opened in a new tab.</small>" : "<small>Popup blocked. Copy the prompt below manually.</small>"}<br><br>
+    <textarea style="width:100%;height:260px;padding:12px;font-family:monospace;border-radius:8px;">${prompt}</textarea>
+  `;
+
+  status.style.color = "#15803d";
+  status.textContent = win ? "✅ Done! Check the new tab." : "⚠️ Popup blocked — copy prompt below.";
+}
   </script>
-</body>
+</>
 </html>
