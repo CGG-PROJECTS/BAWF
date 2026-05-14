@@ -18,13 +18,16 @@
 
     /* Visual Banner */
     .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:30px 0 40px 0; }
-    .visual-aid { 
-      max-width:280px; 
-      border-radius:12px; 
-      box-shadow:0 6px 16px rgba(0,0,0,0.1); 
-      transition: transform 0.3s ease; 
-    }
-    .visual-aid:hover { transform: scale(1.05); }
+.visual-aid {
+  width: 180px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+.visual-aid:hover { transform: scale(1.03); }
+
 
     /* Info Card */
     .info-card {
@@ -342,46 +345,46 @@
     }
           // === NEW FUNCTION - LLM Generator ===
     function generateWithLLM() {
-      const input = document.getElementById("llmInput").value.trim();
-      const task = document.getElementById("llmTask").value;
-      const status = document.getElementById("llmStatus");
-      const resultDiv = document.getElementById("llmResult");
+  const input = document.getElementById("llmInput").value.trim();
+  const task = document.getElementById("llmTask").value;
+  const status = document.getElementById("llmStatus");
+  const resultDiv = document.getElementById("llmResult");
 
-      if (!input) {
-        status.style.color = "red";
-        status.textContent = "Please paste some words first.";
-        return;
-      }
+  if (!input) {
+    status.style.color = "red";
+    status.textContent = "Please paste some words first.";
+    return;
+  }
 
-      status.style.color = "#1d4ed8";
-      status.textContent = "Creating prompt...";
+  status.style.color = "#1d4ed8";
+  status.textContent = "Creating prompt...";
 
-      let prompt = `You are a creative and experienced elementary/middle school teacher who loves teaching morphology.\n\n`;
-      prompt += `Words: \n${input}\n\n`;
+  let prompt = `You are a creative and experienced elementary/middle school teacher who loves teaching morphology.\n\n`;
+  prompt += `Words:\n${input}\n\n`;
 
-      if (task === "story") {
-        prompt += `Write a short, engaging story (250-400 words) for students that naturally includes all these words.`;
-      } else if (task === "worksheet") {
-        prompt += `Create a ready-to-use teacher worksheet using these words. Include activities like word matrix, fill-in-the-blanks, sentence creation, and morphology questions.`;
-      } else {
-        prompt += `Create BOTH a fun short story AND a matching teacher worksheet using these words.`;
-      }
+  if (task === "story") {
+    prompt += `Write a short, engaging story (250-400 words) for students that naturally includes all these words.`;
+  } else if (task === "worksheet") {
+    prompt += `Create a ready-to-use teacher worksheet using these words. Include word matrix, fill-in-the-blanks, sentence creation, and morphology questions.`;
+  } else {
+    prompt += `Create BOTH a fun short story AND a matching teacher worksheet using these words.`;
+  }
 
-      prompt += `\n\nMake it clear, educational, and age-appropriate for Grade 4-6.`;
+  prompt += `\n\nMake it clear, educational, and age-appropriate for Grade 4-6.`;
 
-      // Open Gemini (best free option in 2026)
-      const geminiUrl = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
-      window.open(geminiUrl, '_blank');
+  const geminiUrl = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
+  const win = window.open(geminiUrl, "_blank");
 
-      // Show backup prompt
-      resultDiv.innerHTML = `
-        <strong>✅ Prompt opened in new tab (Gemini)</strong><br><br>
-        <small>If it didn't open, copy the text below:</small><br><br>
-        <textarea style="width:100%; height:260px; padding:12px; font-family:monospace; border-radius:8px;">${prompt}</textarea>
-      `;
-      resultDiv.style.display = "block";
-      status.textContent = "✅ Done! Check the new tab.";
-    }
+  resultDiv.style.display = "block";
+  resultDiv.innerHTML = `
+    <strong>✅ Prompt ready</strong><br><br>
+    ${win ? "<small>Opened in a new tab.</small>" : "<small>Popup blocked. Copy the prompt below manually.</small>"}<br><br>
+    <textarea style="width:100%;height:260px;padding:12px;font-family:monospace;border-radius:8px;">${prompt}</textarea>
+  `;
+
+  status.style.color = "#15803d";
+  status.textContent = win ? "✅ Done! Check the new tab." : "⚠️ Popup blocked — copy prompt below.";
+}
   </script>
 </>
 </html>
