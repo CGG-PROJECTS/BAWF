@@ -260,7 +260,7 @@
           <select id="llmTextType" style="width:100%; padding:10px; border-radius:8px;">
             <option value="informational">Informational Text</option>
             <option value="fiction">Fiction Text</option>
-            <option value="both" selected>Both (Info + Fiction)</option>
+           //<option value="both" selected>Both (Info + Fiction)</option>
             <option value="Worksheet">Worksheet</option>
           </select>
         </div>
@@ -568,14 +568,14 @@
         } else if (cfg.textType === "fiction") {
           prompt += `1) Write one engaging fiction story.\n`;
         } else {
-          prompt += `1) Write BOTH:\n   - One informational text\n   - One fiction story\n`;
+          prompt += `1) Write:\n   - One workseet\n`;
         }
-      } else if (cfg.textType !== "both") {
+      } else if (cfg.textType !== "Worksheet") {
         prompt += `1) Write one ${cfg.textType} text incorporating the target words.\n`;
       }
 
       // Per-word requirements
-      prompt += `2) For EACH target word, provide:\n`;
+      prompt += ` For EACH target word:\n`;
 
       // Activities
       if (cfg.activities.length) {
