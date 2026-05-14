@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BAWF Morphological Database</title>
-  
-  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
-  
-  <style>
+<style>
     body { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(to bottom, #fdfdfd, #f8f8f8); color:#111827; }
     .container { max-width:2800px; margin:42px auto; padding:42px 34px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
     header { text-align:center; margin-bottom:20px; }
@@ -18,36 +9,51 @@
 
     /* Visual Banner */
     .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:30px 0 40px 0; }
-.visual-aid {
-  width: 250px;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
-}
-.visual-aid:hover { transform: scale(1.03); }
+    .visual-aid {
+      width: 250px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    .visual-aid:hover { transform: scale(1.03); }
 
-
-    /* Info Card */
+    /* === UPDATED INFO CARD - Wider + Bolder Text === */
     .info-card {
       background: #f0f4f8;
       border-radius: 12px;
-      padding: 24px;
+      padding: 32px 40px;
       margin: 30px auto;
-      max-width: 1100px;
+      max-width: 1600px;           /* Much wider now */
+      width: 95%;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    .info-card h3 { color:#1d4ed8; margin-top:0; }
+    .info-card h3 { 
+      color:#1d4ed8; 
+      margin-top:0; 
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .info-card ul {
+      font-weight: 600;            /* Bolder text */
+      line-height: 1.75;
+      padding-left: 24px;
+    }
+    .info-card li {
+      margin-bottom: 12px;
+    }
 
     .tabs { display:flex; justify-content:center; gap:12px; margin:32px 0; flex-wrap:wrap; }
     .tab-btn { padding:12px 28px; font-size:1.1rem; font-weight:600; background:#e5e7eb; color:#374151; border:none; border-radius:8px 8px 0 0; cursor:pointer; }
     .tab-btn.active { background:#1d4ed8; color:white; }
     .tab-content { display:none; padding:24px; }
     .tab-content.active { display:block; }
+
     .download-section { text-align:center; margin:20px 0; }
     .download-btn { display:inline-flex; align-items:center; gap:12px; padding:14px 32px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; text-decoration:none; border-radius:10px; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
     .download-btn:hover { background:#1e40af; transform:translateY(-2px); }
+
     iframe { width:100%; height:85vh; min-height:700px; border:none; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
     .loading-note { text-align:center; font-size:1.1rem; color:#6b7280; background:#f0f4f8; padding:16px; border-radius:8px; margin:20px 0; }
 
@@ -62,10 +68,7 @@
     .modal-header h2 { margin:0; color:#1d4ed8; }
     .close { font-size:2rem; font-weight:bold; color:#888; cursor:pointer; }
     .close:hover { color:#111; }
-    .modal- h3 { color:#1d4ed8; margin-top:25px; }
-    .modal- ul { padding-left:20px; line-height:1.7; }
-    .modal- li { margin-bottom:10px; }
-  </style>
+</style>
 </head>
 <>
   <div class="container">
@@ -90,7 +93,7 @@
       <ul>
         <li>Explore English word families, compound words, and definitions/etymologies</li>
         <li>The British and American Word Families (BAWF) is a tool for vocabulary morphology instruction from the primary grades </li>
-        <li>Morphology is the study of how words are built from meaningful units, including bases, roots, prefixes, and suffixes (Hiebert, 2020). A child who understands that the prefix un- means not or reverse does not just know one word; she has a tool for working out the meanings of unhappy, undo, unfair, unknown, unusual, and dozens more. A student who recognizes the Latin root tract is often in words containing meanings such as ‘pull, draw’ is positioned to make more sense of attract, contract, distract, extract, retract, subtract – academic words that span multiple subject areas and grade levels (Coxhead, 2000).</li>
+        <li>Morphology is the study of how words are built from meaningful units, including bases, roots, prefixes, and suffixes. A child who understands that the prefix un- means not or reverse does not just know one word; she has a tool for working out the meanings of unhappy, undo, unfair, unknown, unusual, and dozens more. A student who recognizes the Latin root tract is often in words containing meanings such as ‘pull, draw’ is positioned to make more sense of attract, contract, distract, extract, retract, subtract – academic words that span multiple subject areas and grade levels.</li>
         <li>Filter or search for words you want and particular morphemes.</li>
         <li>Use tabs and serach box in the columns below to sort by freqnecy, grade level, or easily filter for morphologically related words</li>
         <li>Paste word + frequency into the Word Cloud tab to make visuals</li>
@@ -168,8 +171,8 @@
       <div style="max-width:900px; margin:0 auto;">
         <h2 style="text-align:center; color:#1d4ed8;">🪄 Stories & Teacher Worksheets</h2>
         <p style="text-align:center;">Paste 5–20 words (one per line) from the BAWF tables</p>
-        
-        <textarea id="llmInput" rows="12" 
+       
+        <textarea id="llmInput" rows="12"
           style="width:100%; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
           placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract&#10;contract"></textarea>
 
@@ -179,12 +182,19 @@
             <option value="worksheet" selected>Teacher Worksheet</option>
             <option value="both">Both Story + Worksheet</option>
           </select>
-
-          <button onclick="generateWithLLM()" 
+          <button onclick="generateWithLLM()"
             style="padding:14px 36px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:10px; cursor:pointer;">
-            Generate Inside This Page
+            Generate Prompt Inside This Page
           </button>
         </div>
+
+        <p id="llmStatus" style="text-align:center; font-weight:500; min-height:28px;"></p>
+
+        <div id="llmResult" style="display:none; background:#f8fafc; padding:25px; border-radius:12px; border:1px solid #e5e7eb; margin-top:20px;">
+          <!-- Content will be inserted by JavaScript -->
+        </div>
+      </div>
+    </div>
 
         <p id="llmStatus" style="text-align:center; font-weight:500; min-height:28px;"></p>
 
@@ -344,47 +354,67 @@
       }, 100);
     }
           // === NEW FUNCTION - LLM Generator ===
+       // === IMPROVED IN-PAGE LLM GENERATOR ===
     function generateWithLLM() {
-  const input = document.getElementById("llmInput").value.trim();
-  const task = document.getElementById("llmTask").value;
-  const status = document.getElementById("llmStatus");
-  const resultDiv = document.getElementById("llmResult");
+      const input = document.getElementById("llmInput").value.trim();
+      const task = document.getElementById("llmTask").value;
+      const status = document.getElementById("llmStatus");
+      const resultDiv = document.getElementById("llmResult");
 
-  if (!input) {
-    status.style.color = "red";
-    status.textContent = "Please paste some words first.";
-    return;
-  }
+      if (!input) {
+        status.style.color = "red";
+        status.textContent = "❌ Please paste some words first.";
+        return;
+      }
 
-  status.style.color = "#1d4ed8";
-  status.textContent = "Creating prompt...";
+      status.style.color = "#1d4ed8";
+      status.textContent = "✅ Building prompt...";
 
-  let prompt = `You are a creative and experienced elementary/middle school teacher who loves teaching morphology.\n\n`;
-  prompt += `Words:\n${input}\n\n`;
+      let prompt = `You are a creative and experienced elementary/middle school teacher who specializes in morphology and vocabulary instruction.\n\n`;
+      prompt += `Target words (use all of them naturally):\n${input}\n\n`;
 
-  if (task === "story") {
-    prompt += `Write a short, engaging story (250-400 words) for students that naturally includes all these words.`;
-  } else if (task === "worksheet") {
-    prompt += `Create a ready-to-use teacher worksheet using these words. Include word matrix, fill-in-the-blanks, sentence creation, and morphology questions.`;
-  } else {
-    prompt += `Create BOTH a fun short story AND a matching teacher worksheet using these words.`;
-  }
+      if (task === "story") {
+        prompt += `Write a fun, engaging short story (250-400 words) for students that naturally includes all these words.`;
+      } else if (task === "worksheet") {
+        prompt += `Create a complete, ready-to-use teacher worksheet. Include: word matrix, fill-in-the-blanks, sentence creation exercises, morphology questions, and a short reading passage.`;
+      } else {
+        prompt += `Create BOTH a fun short story AND a matching teacher worksheet using all the target words.`;
+      }
 
-  prompt += `\n\nMake it clear, educational, and age-appropriate for Grade 4-6.`;
+      prompt += `\n\nTarget grade level: Grade 4-6.`;
+      prompt += `\nMake the language clear, educational, and enjoyable for students.`;
+      prompt += `\nUse clear headings and format it nicely for teachers.`;
 
-  const geminiUrl = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
-  const win = window.open(geminiUrl, "_blank");
+      // Display nicely inside the page
+      resultDiv.innerHTML = `
+        <strong>✅ Your Prompt is Ready</strong><br><br>
+        <textarea id="finalPrompt" style="width:100%; height:320px; padding:15px; font-family:monospace; border-radius:8px; border:1px solid #ccc; resize:vertical;">${prompt}</textarea><br><br>
+        
+        <div style="text-align:center;">
+          <button onclick="copyLLMPrompt()" 
+            style="padding:12px 28px; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+            📋 Copy Prompt
+          </button>
+        </div>
+      `;
 
-  resultDiv.style.display = "block";
-  resultDiv.innerHTML = `
-    <strong>✅ Prompt ready</strong><br><br>
-    ${win ? "<small>Opened in a new tab.</small>" : "<small>Popup blocked. Copy the prompt below manually.</small>"}<br><br>
-    <textarea style="width:100%;height:260px;padding:12px;font-family:monospace;border-radius:8px;">${prompt}</textarea>
-  `;
+      resultDiv.style.display = "block";
+      status.style.color = "#15803d";
+      status.textContent = "✅ Prompt generated below. Copy and paste into Gemini, Grok, or ChatGPT.";
+    }
 
-  status.style.color = "#15803d";
-  status.textContent = win ? "✅ Done! Check the new tab." : "⚠️ Popup blocked — copy prompt below.";
-}
+    function copyLLMPrompt() {
+      const textarea = document.getElementById("finalPrompt");
+      if (textarea) {
+        textarea.select();
+        document.execCommand("copy");
+        
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = "✅ Copied!";
+        setTimeout(() => { btn.textContent = originalText; }, 2000);
+      }
+    }
   </script>
 </>
 </html>
