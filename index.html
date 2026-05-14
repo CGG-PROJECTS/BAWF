@@ -188,49 +188,89 @@
     </div>
 
     <!-- LLM Tab -->
-    <div id="llm-generator" class="tab-content">
-  <div style="max-width:950px; margin:0 auto;">
-    <h2 style="text-align:center; color:#1d4ed8;">🪄 AI Prompt Generator </h2>
-    <p style="text-align:center;">Paste 5–20 words (one per line), generate prompt, edit as you see fit then open external AI.</p>
+<div id="llm-generator" class="tab-content">
+  <div style="max-width:1100px; margin:0 auto;">
+    <h2 style="text-align:center; color:#1d4ed8;">🪄 AI Prompt Generator</h2>
+    <p style="text-align:center;">Choose text type, grade level, focus area, and activities.</p>
 
-    <textarea id="llmInput" rows="12"
-      style="width:100%; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
-      placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;contract"></textarea>
+    <textarea id="llmInput" rows="8"
+      style="width:100%; padding:14px; font-family:monospace; font-size:1.02rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
+      placeholder="Paste target words (one per line)&#10;unhappy&#10;misunderstand&#10;transport&#10;attract&#10;contract"></textarea>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:18px 0;">
-      <select id="llmTask" style="padding:10px 14px; font-size:1rem; border-radius:8px;">
-        <option value="story">Little Story</option>
-        <option value="worksheet" selected>Teacher Worksheet</option>
-        <option value="both">Story + Worksheet</option>
-      </select>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:14px 0;">
+      <div>
+        <label><strong>Prompt Type</strong></label><br>
+        <select id="llmTextType" style="width:100%; padding:10px; border-radius:8px;">
+          <option value="informational">Informational Text</option>
+          <option value="fiction">Fiction Text</option>
+          <option value="both">Both (Info + Fiction)</option>
+        </select>
+      </div>
 
+      <div>
+        <label><strong>Grade Level</strong></label><br>
+        <select id="llmGrade" style="width:100%; padding:10px; border-radius:8px;">
+          <option>K–1</option>
+          <option>2–3</option>
+          <option selected>4–6</option>
+          <option>7–8</option>
+        </select>
+      </div>
+
+      <div>
+        <label><strong>Length</strong></label><br>
+        <select id="llmLength" style="width:100%; padding:10px; border-radius:8px;">
+          <option value="short">Short</option>
+          <option value="medium" selected>Medium</option>
+          <option value="long">Long</option>
+        </select>
+      </div>
+
+      <div>
+        <label><strong>Content Area</strong></label><br>
+        <input id="llmContentArea" type="text" placeholder="e.g., Science, History, Nature"
+          style="width:100%; padding:10px; border-radius:8px; border:1px solid #d1d5db;">
+      </div>
+    </div>
+
+    <label><strong>Teacher Focus Area (black box)</strong></label>
+    <textarea id="llmFocus" rows="3"
+      style="width:100%; padding:12px; border-radius:10px; background:#111827; color:#f9fafb; border:1px solid #374151; font-family:inherit;"
+      placeholder="Type focus here (e.g., prefixes un-/re-, context clues, inference, decoding multisyllabic words)"></textarea>
+
+    <div style="margin-top:14px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; padding:12px;">
+      <strong>Include Activities:</strong>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:8px; margin-top:8px;">
+        <label><input type="checkbox" class="act-option" value="Word ladder activity" checked> Word ladder</label>
+        <label><input type="checkbox" class="act-option" value="Semantically related word lists for each target word" checked> Semantic word lists</label>
+        <label><input type="checkbox" class="act-option" value="Gap-fill activity" checked> Gap fill</label>
+        <label><input type="checkbox" class="act-option" value="Story using semantically related words for each morphology target" checked> Semantic story</label>
+        <label><input type="checkbox" class="act-option" value="Story with comprehension questions and answer key" checked> Story + comprehension</label>
+        <label><input type="checkbox" class="act-option" value="Sentence frames activity"> Sentence frames</label>
+        <label><input type="checkbox" class="act-option" value="Suggested word ladder sequence with teacher notes"> Suggested ladder + notes</label>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:16px 0;">
       <select id="llmProvider" style="padding:10px 14px; font-size:1rem; border-radius:8px;">
         <option value="gemini" selected>Gemini</option>
         <option value="chatgpt">ChatGPT</option>
         <option value="claude">Claude</option>
       </select>
 
-      <button onclick="generateWithLLM()"
-        style="padding:12px 18px; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer;">
-        Generate Prompt
-      </button>
-      <button onclick="copyLLMPrompt()"
-        style="padding:12px 18px; font-weight:600; background:#0f766e; color:white; border:none; border-radius:8px; cursor:pointer;">
-        Copy Prompt
-      </button>
-      <button onclick="openInLLM()"
-        style="padding:12px 18px; font-weight:600; background:#7c3aed; color:white; border:none; border-radius:8px; cursor:pointer;">
-        Open in Selected LLM (Gemini)
-      </button>
+      <button onclick="generateWithLLM()" style="padding:12px 18px; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:8px; cursor:pointer;">Generate Prompt</button>
+      <button onclick="copyLLMPrompt()" style="padding:12px 18px; font-weight:600; background:#0f766e; color:white; border:none; border-radius:8px; cursor:pointer;">Copy Prompt</button>
+      <button onclick="openInLLM()" style="padding:12px 18px; font-weight:600; background:#7c3aed; color:white; border:none; border-radius:8px; cursor:pointer;">Open in Selected LLM</button>
     </div>
 
     <p id="llmStatus" style="text-align:center; font-weight:600; min-height:24px;"></p>
 
-    <textarea id="finalPrompt" rows="14" readonly
+    <textarea id="finalPrompt" rows="16"
       style="width:100%; padding:14px; font-family:monospace; border:2px solid #d1d5db; border-radius:10px; background:#f9fafb;"
       placeholder="Generated prompt appears here..."></textarea>
   </div>
 </div>
+
 
     <footer style="text-align:center; margin-top:48px; color:#6b7280;">
       <p>Hosted via Microsoft Excel Online</p>
@@ -385,84 +425,79 @@ function generateWordCloud() {
     }, 100);
   }
 
-  function buildPromptText(words, task) {
-    let prompt = `You are an expert elementary/middle literacy teacher focused on morphology and vocabulary instruction.\n\n`;
-    prompt += `Target words (use all naturally):\n${words.join("\n")}\n\n`;
+  function buildPromptText(words, cfg) {
+  const lenMap = {
+    short: "150–250 words per text",
+    medium: "250–450 words per text",
+    long: "450–700 words per text"
+  };
 
-    if (task === "story") {
-      prompt += `Write a fun, engaging short story (250-400 words) using all target words.\n`;
-    } else if (task === "worksheet") {
-      prompt += `Create a ready-to-use teacher worksheet with:\n`;
-      prompt += `- word study/morphology section\n- fill-in-the-blanks\n- sentence creation\n- 5 comprehension questions\n- answer key\n`;
-    } else {
-      prompt += `Create BOTH:\n1) A short story (250-400 words)\n2) A matching worksheet with answer key\n`;
-    }
+  let prompt = `You are an expert literacy teacher and curriculum writer.\n\n`;
+  prompt += `TARGET WORDS (use all naturally):\n${words.join("\n")}\n\n`;
+  prompt += `SETTINGS:\n`;
+  prompt += `- Text type: ${cfg.textType}\n`;
+  prompt += `- Grade band: ${cfg.grade}\n`;
+  prompt += `- Length: ${lenMap[cfg.length] || lenMap.medium}\n`;
+  prompt += `- Content area/theme: ${cfg.contentArea || "General academic vocabulary"}\n`;
+  prompt += `- Teacher focus area: ${cfg.focus || "Morphology, meaning, and usage"}\n\n`;
 
-    prompt += `\nGrade band: 4-6.\nUse clear headings and student-friendly language.`;
-    return prompt;
+  prompt += `REQUIRED OUTPUT:\n`;
+  if (cfg.textType === "informational") {
+    prompt += `1) Write one informational text.\n`;
+  } else if (cfg.textType === "fiction") {
+    prompt += `1) Write one fiction text.\n`;
+  } else {
+    prompt += `1) Write BOTH:\n   - one informational text\n   - one fiction text\n`;
   }
 
-  function generateWithLLM() {
-    const raw = document.getElementById("llmInput").value.trim();
-    const task = document.getElementById("llmTask").value;
-    const status = document.getElementById("llmStatus");
-    const out = document.getElementById("finalPrompt");
+  prompt += `2) For EACH target word, provide:\n`;
+  prompt += `   - student-friendly meaning\n`;
+  prompt += `   - morpheme breakdown (prefix/base/suffix where relevant)\n`;
+  prompt += `   - 2 semantically related words\n\n`;
 
-    if (!raw) {
-      status.style.color = "red";
-      status.textContent = "❌ Please paste words first.";
-      return;
-    }
-
-    const words = raw.split(/\r?\n|,/).map(w => w.trim()).filter(Boolean);
-    const prompt = buildPromptText(words, task);
-
-    out.value = prompt;
-    status.style.color = "#15803d";
-    status.textContent = `✅ Prompt ready (${words.length} words). Copy it or open in selected LLM.`;
+  if (cfg.activities.length) {
+    prompt += `3) Create these activities:\n`;
+    cfg.activities.forEach((a, i) => prompt += `   ${i + 1}. ${a}\n`);
+    prompt += `\n`;
   }
 
-  function copyLLMPrompt() {
-    const out = document.getElementById("finalPrompt");
-    const status = document.getElementById("llmStatus");
-    if (!out.value.trim()) {
-      status.style.color = "red";
-      status.textContent = "❌ Generate a prompt first.";
-      return;
-    }
-    navigator.clipboard.writeText(out.value).then(() => {
-      status.style.color = "#15803d";
-      status.textContent = "✅ Prompt copied.";
-    }).catch(() => {
-      status.style.color = "red";
-      status.textContent = "❌ Copy failed. Please copy manually.";
-    });
+  prompt += `4) Add teacher supports:\n`;
+  prompt += `   - differentiation tips (below/at/above level)\n`;
+  prompt += `   - quick answer key\n`;
+  prompt += `   - printable-friendly formatting with clear headings\n\n`;
+
+  prompt += `Use clear, engaging, classroom-ready language.`;
+  return prompt;
+}
+
+function generateWithLLM() {
+  const raw = document.getElementById("llmInput").value.trim();
+  const status = document.getElementById("llmStatus");
+  const out = document.getElementById("finalPrompt");
+
+  if (!raw) {
+    status.style.color = "red";
+    status.textContent = "❌ Please paste target words first.";
+    return;
   }
 
-  function openInLLM() {
-    const prompt = document.getElementById("finalPrompt").value.trim();
-    const provider = document.getElementById("llmProvider").value;
-    const status = document.getElementById("llmStatus");
+  const words = raw.split(/\r?\n|,/).map(w => w.trim()).filter(Boolean);
+  const activities = Array.from(document.querySelectorAll(".act-option:checked")).map(el => el.value);
 
-    if (!prompt) {
-      status.style.color = "red";
-      status.textContent = "❌ Generate a prompt first.";
-      return;
-    }
+  const cfg = {
+    textType: document.getElementById("llmTextType").value,
+    grade: document.getElementById("llmGrade").value,
+    length: document.getElementById("llmLength").value,
+    contentArea: document.getElementById("llmContentArea").value.trim(),
+    focus: document.getElementById("llmFocus").value.trim(),
+    activities
+  };
 
-    let url = "";
-    if (provider === "gemini") url = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
-    if (provider === "chatgpt") url = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
-    if (provider === "claude") url = `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+  out.value = buildPromptText(words, cfg);
+  status.style.color = "#15803d";
+  status.textContent = `✅ Prompt ready (${words.length} words, ${activities.length} activities selected).`;
+}
 
-    const w = window.open(url, "_blank");
-    if (!w) {
-      status.style.color = "red";
-      status.textContent = "❌ Popup blocked. Copy prompt and paste manually.";
-    } else {
-      status.style.color = "#15803d";
-      status.textContent = "✅ Opened in new tab.";
-    }
   }
 </script>
 
