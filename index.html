@@ -234,6 +234,7 @@
       <!-- Your modal content here -->
     </div>
   </div>
+<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
 
   <script>
   let wordCloudReady = false;
@@ -256,22 +257,23 @@
     document.getElementById("columnModal").style.display = "none";
   }
 
-  function generateWordCloud() {
-    const status = document.getElementById("cloudStatus");
-    const input = document.getElementById("wordInput").value.trim();
-    status.style.color = "#6b7280";
-    status.textContent = "Processing...";
+function generateWordCloud() {
+  const status = document.getElementById("cloudStatus");
+  const input = document.getElementById("wordInput").value.trim();
+  status.style.color = "#6b7280";
+  status.textContent = "Processing...";
 
-    if (!input) {
-      status.style.color = "red";
-      status.textContent = "Please paste word-frequency data first.";
-      return;
-    }
-    if (!wordCloudReady && typeof WordCloud !== "function") {
-      status.textContent = "Loading Word Cloud...";
-      setTimeout(generateWordCloud, 1000);
-      return;
-    }
+  if (!input) {
+    status.style.color = "red";
+    status.textContent = "Please paste word-frequency data first.";
+    return;
+  }
+
+  if (typeof window.WordCloud !== "function") {
+    status.style.color = "red";
+    status.textContent = "❌ WordCloud library failed to load. Check CDN/script tag.";
+    return;
+  }
 
     const list = [];
     const lines = input.split(/\r?\n/);
