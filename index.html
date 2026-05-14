@@ -691,7 +691,7 @@
       return;
     }
 
-    // Sort and prioritize small/fast models
+    // Sort by size (smallest first) and prioritize fast models
     const sorted = [...list].sort((a, b) => {
       const getSize = m => parseFloat(m.model_id.match(/(\d+\.?\d*)/)?.[1] || 999);
       return getSize(a) - getSize(b);
@@ -707,15 +707,23 @@
   }
 
   async function initWebLLMInternal() {
-    // ... (your existing init code - unchanged)
-    if (!window.isSecureContext) { setStatus("❌ WebLLM needs HTTPS", "red"); return; }
-    if (!navigator.gpu) { setStatus("❌ WebGPU not available", "red"); return; }
+    if (!window.isSecureContext) {
+      setStatus("❌ WebLLM needs HTTPS (or localhost)", "red");
+      return;
+    }
+    if (!navigator.gpu) {
+      setStatus("❌ WebGPU not available in this browser/device", "red");
+      return;
+    }
 
     const selected = modelEl().value;
-    if (!selected) { setStatus("❌ Select a model first", "red"); return; }
+    if (!selected) {
+      setStatus("❌ Please select a model first", "red");
+      return;
+    }
 
     loadBtnEl().disabled = true;
-    setStatus("Loading model... (can take 30–180s first time)", "#1d4ed8");
+    setStatus("Loading model... (first time can take 30–180 seconds)", "#1d4ed8");
 
     try {
       engine = await webllm.CreateMLCEngine(selected, {
@@ -724,11 +732,12 @@
           setStatus(`Loading ${selected}... ${report.text || ""}${pct}`, "#1d4ed8");
         }
       });
+
       setStatus(`✅ Model loaded: ${selected}`, "#15803d");
       addChat("System", `Model ready: ${selected}`);
     } catch (err) {
       console.error(err);
-      setStatus("❌ Failed to load. Try smaller model.", "red");
+      setStatus("❌ Failed to load model. Try a smaller one.", "red");
     } finally {
       loadBtnEl().disabled = false;
     }
@@ -739,7 +748,6 @@
       setStatus("❌ Load a model first.", "red");
       return;
     }
-
     const userText = inputEl().value.trim();
     if (!userText) return;
 
@@ -779,19 +787,19 @@
     chatEl().innerHTML = "";
     setStatus("Chat reset.", "#374151");
   }
-<button id="sendBtn">Send</button>
-<button id="stopBtn" disabled>Stop</button>
 
-  // Expose to your inline onclick handlers
+  // Expose functions to global scope (for onclick handlers)
   window.initWebLLM = initWebLLMInternal;
   window.sendWebLLM = sendWebLLMInternal;
   window.resetWebLLMChat = resetWebLLMChatInternal;
 
-  populateModels();
-  setStatus("Select a model, then click Load Model.");
-<button id="sendBtn">Send</button>
-<button id="stopBtn" disabled>Stop</button>
-
+  // Initialize when page loads
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      populateModels();
+      setStatus("Select a model, then click 'Load Model'.", "#374151");
+    }, 600);
+  });
 </script>
 
 
