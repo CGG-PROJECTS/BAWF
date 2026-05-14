@@ -70,7 +70,7 @@
       <h1>BAWF Morphological Database</h1>
       <div class="tagline">Morphology, roots, affixes, compounds, and etymology — interactive</div>
     </header>
-
+      <button class="tab-btn" onclick="openTab('llm-generator', this)">🪄 Stories & Worksheets</button>
     <!-- YOUR ORIGINAL WORKING VISUAL BANNER -->
     <div class="visual-banner">
       <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Word_Cloud_of_Various_Prefixes.png" alt="Word cloud of common English prefixes" class="visual-aid">
@@ -159,7 +159,32 @@
       </div>
       <canvas id="wordCanvas" width="1100" height="700"></canvas>
     </div>
+    <!-- === NEW SIMPLE TAB - Stories & Worksheets === -->
+    <div id="llm-generator" class="tab-content">
+      <div style="max-width:900px; margin:0 auto; text-align:center;">
+        <h2 style="color:#1d4ed8;">Stories & Teacher Worksheets</h2>
+        <p><strong>Paste 5–20 words</strong> (one per line) from any BAWF table</p>
+        
+        <textarea id="llmInput" rows="10" 
+          style="width:100%; max-width:800px; padding:16px; font-family:monospace; font-size:1.05rem; border:2px solid #d1d5db; border-radius:10px; resize:vertical;"
+          placeholder="unhappy&#10;misunderstand&#10;transport&#10;attract&#10;retract"></textarea><br><br>
 
+        <select id="llmTask" style="padding:10px 16px; font-size:1.05rem; margin:0 8px 16px 0; border-radius:8px;">
+          <option value="story">Generate a Little Story</option>
+          <option value="worksheet">Generate Teacher Worksheet</option>
+          <option value="both">Generate Both</option>
+        </select>
+
+        <button onclick="generateWithLLM()" 
+          style="padding:14px 40px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; border:none; border-radius:10px; cursor:pointer;">
+          🚀 Generate with Free LLM
+        </button>
+
+        <p id="llmStatus" style="margin-top:16px; font-weight:500; min-height:28px;"></p>
+
+        <div id="llmResult" style="margin-top:30px; text-align:left; display:none;"></div>
+      </div>
+    </div>
     <footer style="text-align:center; margin-top:48px; color:#6b7280;">
       <p>Hosted via Microsoft Excel Online</p>
     </footer>
@@ -311,6 +336,48 @@
         status.style.color = "#15803d";
         status.textContent = `✅ Success! ${list.length} words generated.`;
       }, 100);
+    }
+        // === NEW FUNCTION - LLM Generator ===
+    function generateWithLLM() {
+      const input = document.getElementById("llmInput").value.trim();
+      const task = document.getElementById("llmTask").value;
+      const status = document.getElementById("llmStatus");
+      const resultDiv = document.getElementById("llmResult");
+
+      if (!input) {
+        status.style.color = "red";
+        status.textContent = "Please paste some words first.";
+        return;
+      }
+
+      status.style.color = "#1d4ed8";
+      status.textContent = "Creating prompt...";
+
+      let prompt = `You are a creative and experienced elementary/middle school teacher who loves teaching morphology.\n\n`;
+      prompt += `Words: \n${input}\n\n`;
+
+      if (task === "story") {
+        prompt += `Write a short, engaging story (250-400 words) for students that naturally includes all these words.`;
+      } else if (task === "worksheet") {
+        prompt += `Create a ready-to-use teacher worksheet using these words. Include activities like word matrix, fill-in-the-blanks, sentence creation, and morphology questions.`;
+      } else {
+        prompt += `Create BOTH a fun short story AND a matching teacher worksheet using these words.`;
+      }
+
+      prompt += `\n\nMake it clear, educational, and age-appropriate for Grade 4-6.`;
+
+      // Open Gemini (best free option in 2026)
+      const geminiUrl = `https://gemini.google.com/app?prompt=${encodeURIComponent(prompt)}`;
+      window.open(geminiUrl, '_blank');
+
+      // Show backup prompt
+      resultDiv.innerHTML = `
+        <strong>✅ Prompt opened in new tab (Gemini)</strong><br><br>
+        <small>If it didn't open, copy the text below:</small><br><br>
+        <textarea style="width:100%; height:260px; padding:12px; font-family:monospace; border-radius:8px;">${prompt}</textarea>
+      `;
+      resultDiv.style.display = "block";
+      status.textContent = "✅ Done! Check the new tab.";
     }
   </script>
 </>
