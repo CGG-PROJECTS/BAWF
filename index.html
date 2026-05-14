@@ -362,73 +362,101 @@
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
-
-  <script>
+<script>
+  // ===== Init =====
   let wordCloudReady = false;
+
   window.addEventListener("load", () => {
-    setTimeout(() => { if (typeof WordCloud === "function") wordCloudReady = true; }, 800);
+    setTimeout(() => {
+      if (typeof window.WordCloud === "function") wordCloudReady = true;
+    }, 800);
   });
 
+  // Optional: close modal if user clicks outside modal content
+  window.addEventListener("click", (e) => {
+    const modal = document.getElementById("columnModal");
+    if (e.target === modal) closeModal();
+  });
+
+  // ===== Tabs =====
   function openTab(tabName, btnEl) {
     document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
     document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+
     const tab = document.getElementById(tabName);
     if (tab) tab.classList.add("active");
     if (btnEl) btnEl.classList.add("active");
   }
 
+  // ===== Modal =====
   function showColumnKey() {
-    document.getElementById("columnModal").style.display = "block";
+    const modal = document.getElementById("columnModal");
+    if (modal) modal.style.display = "block";
   }
+
   function closeModal() {
-    document.getElementById("columnModal").style.display = "none";
+    const modal = document.getElementById("columnModal");
+    if (modal) modal.style.display = "none";
   }
 
-function generateWordCloud() {
-  const status = document.getElementById("cloudStatus");
-  const input = document.getElementById("wordInput").value.trim();
-  status.style.color = "#6b7280";
-  status.textContent = "Processing...";
+  // ===== Word Cloud =====
+  function generateWordCloud() {
+    const status = document.getElementById("cloudStatus");
+    const inputEl = document.getElementById("wordInput");
+    const canvas = document.getElementById("wordCanvas");
 
-  if (!input) {
-    status.style.color = "red";
-    status.textContent = "Please paste word-frequency data first.";
-    return;
-  }
+    if (!status || !inputEl || !canvas) return;
 
-  if (typeof window.WordCloud !== "function") {
-    status.style.color = "red";
-    status.textContent = "❌ WordCloud library failed to load. Check CDN/script tag.";
-    return;
-  }
+    const input = inputEl.value.trim();
+    status.style.color = "#6b7280";
+    status.textContent = "Processing...";
+
+    if (!input) {
+      status.style.color = "red";
+      status.textContent = "Please paste word-frequency data first.";
+      return;
+    }
+
+    if (typeof window.WordCloud !== "function") {
+      status.style.color = "red";
+      status.textContent = "❌ WordCloud library failed to load. Check CDN/script tag.";
+      return;
+    }
 
     const list = [];
     const lines = input.split(/\r?\n/);
+
     for (let line of lines) {
       line = line.trim();
       if (!line) continue;
+
+      // Matches: "word 120" OR "multi word term 95.5"
       const match = line.match(/^(.*?)\s+(-?\d*\.?\d+)$/);
-      if (match) {
-        const word = match[1].trim();
-        const freq = parseFloat(match[2]);
-        if (word && freq > 0) list.push([word, freq]);
+      if (!match) continue;
+
+      const word = match[1].trim();
+      const freq = parseFloat(match[2]);
+      if (word && Number.isFinite(freq) && freq > 0) {
+        list.push([word, freq]);
       }
     }
 
-    if (list.length === 0) {
+    if (!list.length) {
       status.style.color = "red";
       status.textContent = "No valid data. Example: analysis 120";
       return;
     }
 
     list.sort((a, b) => b[1] - a[1]);
-    const canvas = document.getElementById("wordCanvas");
+
     canvas.width = 1100;
     canvas.height = 700;
+
+    status.style.color = "#6b7280";
     status.textContent = `Generating cloud with ${list.length} words...`;
 
     setTimeout(() => {
-      WordCloud(canvas, {
+      window.WordCloud(canvas, {
         list,
         gridSize: 8,
         weightFactor: 22,
@@ -439,171 +467,164 @@ function generateWordCloud() {
         minSize: 10,
         shrinkToFit: true
       });
+
       status.style.color = "#15803d";
       status.textContent = `✅ Success! ${list.length} words generated.`;
     }, 100);
   }
 
+  // ===== LLM Prompt Builder =====
+  function buildPromptText(words, cfg) {
+    const lenMap = {
+      short: "150–250 words per text",
+      medium: "250–450 words per text",
+      long: "450–700 words per text"
+    };
 
-function buildPromptText(words, cfg) {
-  const lenMap = {
-    short: "150–250 words per text",
-    medium: "250–450 words per text",
-    long: "450–700 words per text"
-  };
+    let prompt = `You are an expert literacy teacher and curriculum writer.\n\n`;
+    prompt += `TARGET WORDS (use all naturally):\n${words.join("\n")}\n\n`;
+    prompt += `SETTINGS:\n`;
+    prompt += `- Text type: ${cfg.textType}\n`;
+    prompt += `- Grade band: ${cfg.grade}\n`;
+    prompt += `- Length: ${lenMap[cfg.length] || lenMap.medium}\n`;
+    prompt += `- Content area/theme: ${cfg.contentArea || "General academic vocabulary"}\n`;
+    prompt += `- Teacher focus area: ${cfg.focus || "Morphology, meaning, and usage"}\n\n`;
 
-  let prompt = `You are an expert literacy teacher and curriculum writer.\n\n`;
-  prompt += `TARGET WORDS (use all naturally):\n${words.join("\n")}\n\n`;
-  prompt += `SETTINGS:\n`;
-  prompt += `- Text type: ${cfg.textType}\n`;
-  prompt += `- Grade band: ${cfg.grade}\n`;
-  prompt += `- Length: ${lenMap[cfg.length] || lenMap.medium}\n`;
-  prompt += `- Content area/theme: ${cfg.contentArea || "General academic vocabulary"}\n`;
-  prompt += `- Teacher focus area: ${cfg.focus || "Morphology, meaning, and usage"}\n\n`;
+    prompt += `REQUIRED OUTPUT:\n`;
+    if (cfg.textType === "informational") {
+      prompt += `1) Write one informational text.\n`;
+    } else if (cfg.textType === "fiction") {
+      prompt += `1) Write one fiction text.\n`;
+    } else {
+      prompt += `1) Write BOTH:\n   - one informational text\n   - one fiction text\n`;
+    }
 
-  prompt += `REQUIRED OUTPUT:\n`;
-  if (cfg.textType === "informational") {
-    prompt += `1) Write one informational text.\n`;
-  } else if (cfg.textType === "fiction") {
-    prompt += `1) Write one fiction text.\n`;
-  } else {
-    prompt += `1) Write BOTH:\n   - one informational text\n   - one fiction text\n`;
+    prompt += `2) For EACH target word, provide:\n`;
+    prompt += `   - student-friendly meaning\n`;
+    prompt += `   - morpheme breakdown (prefix/base/suffix where relevant)\n`;
+    prompt += `   - 2 semantically related words\n\n`;
+
+    if (cfg.activities.length) {
+      prompt += `3) Create these activities:\n`;
+      cfg.activities.forEach((a, i) => {
+        prompt += `   ${i + 1}. ${a}\n`;
+      });
+      prompt += `\n`;
+    }
+
+    prompt += `4) Add teacher supports:\n`;
+    prompt += `   - differentiation tips (below/at/above level)\n`;
+    prompt += `   - quick answer key\n`;
+    prompt += `   - printable-friendly formatting with clear headings\n\n`;
+    prompt += `Use clear, engaging, classroom-ready language.`;
+
+    return prompt;
   }
 
-  prompt += `2) For EACH target word, provide:\n`;
-  prompt += `   - student-friendly meaning\n`;
-  prompt += `   - morpheme breakdown (prefix/base/suffix where relevant)\n`;
-  prompt += `   - 2 semantically related words\n\n`;
+  function generateWithLLM() {
+    const raw = document.getElementById("llmInput")?.value.trim() || "";
+    const status = document.getElementById("llmStatus");
+    const out = document.getElementById("finalPrompt");
 
-  if (cfg.activities.length) {
-    prompt += `3) Create these activities:\n`;
-    cfg.activities.forEach((a, i) => prompt += `   ${i + 1}. ${a}\n`);
-    prompt += `\n`;
-  }
+    if (!status || !out) return;
 
-  prompt += `4) Add teacher supports:\n`;
-  prompt += `   - differentiation tips (below/at/above level)\n`;
-  prompt += `   - quick answer key\n`;
-  prompt += `   - printable-friendly formatting with clear headings\n\n`;
-  prompt += `Use clear, engaging, classroom-ready language.`;
+    if (!raw) {
+      status.style.color = "red";
+      status.textContent = "❌ Please paste target words first.";
+      return;
+    }
 
-  return prompt;
-}
+    const words = raw.split(/\r?\n|,/).map(w => w.trim()).filter(Boolean);
+    const activities = Array.from(document.querySelectorAll(".act-option:checked")).map(el => el.value);
 
-function generateWithLLM() {
-  const raw = document.getElementById("llmInput").value.trim();
-  const status = document.getElementById("llmStatus");
-  const out = document.getElementById("finalPrompt");
+    const cfg = {
+      textType: document.getElementById("llmTextType")?.value || "both",
+      grade: document.getElementById("llmGrade")?.value || "4–6",
+      length: document.getElementById("llmLength")?.value || "medium",
+      contentArea: document.getElementById("llmContentArea")?.value.trim() || "",
+      focus: document.getElementById("llmFocus")?.value.trim() || "",
+      activities
+    };
 
-  if (!raw) {
-    status.style.color = "red";
-    status.textContent = "❌ Please paste target words first.";
-    return;
-  }
-
-  const words = raw.split(/\r?\n|,/).map(w => w.trim()).filter(Boolean);
-  const activities = Array.from(document.querySelectorAll(".act-option:checked")).map(el => el.value);
-
-  const cfg = {
-    textType: document.getElementById("llmTextType").value,
-    grade: document.getElementById("llmGrade").value,
-    length: document.getElementById("llmLength").value,
-    contentArea: document.getElementById("llmContentArea").value.trim(),
-    focus: document.getElementById("llmFocus").value.trim(),
-    activities
-  };
-
-  out.value = buildPromptText(words, cfg);
-  status.style.color = "#15803d";
-  status.textContent = `✅ Prompt ready (${words.length} words, ${activities.length} activities selected).`;
-}
-
-function copyLLMPrompt() {
-  const out = document.getElementById("finalPrompt");
-  const status = document.getElementById("llmStatus");
-
-  if (!out.value.trim()) {
-    status.style.color = "red";
-    status.textContent = "❌ Generate a prompt first.";
-    return;
-  }
-
-  navigator.clipboard.writeText(out.value).then(() => {
+    out.value = buildPromptText(words, cfg);
     status.style.color = "#15803d";
-    status.textContent = "✅ Prompt copied.";
-  }).catch(() => {
-    status.style.color = "red";
-    status.textContent = "❌ Copy failed. Please copy manually.";
-  });
-}
-
-function openInLLM() {
-  const prompt = document.getElementById("finalPrompt").value.trim();
-  const provider = document.getElementById("llmProvider").value;
-  const status = document.getElementById("llmStatus");
-
-  if (!prompt) {
-    status.style.color = "red";
-    status.textContent = "❌ Generate a prompt first.";
-    return;
+    status.textContent = `✅ Prompt ready (${words.length} words, ${activities.length} activities selected).`;
   }
 
-  const w = window.open("about:blank", "_blank");
-  if (!w) {
-    status.style.color = "red";
-    status.textContent = "❌ Popup blocked. Allow popups, then try again.";
-    return;
+  function copyLLMPrompt() {
+    const out = document.getElementById("finalPrompt");
+    const status = document.getElementById("llmStatus");
+    if (!out || !status) return;
+
+    const text = out.value.trim();
+    if (!text) {
+      status.style.color = "red";
+      status.textContent = "❌ Generate a prompt first.";
+      return;
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+      status.style.color = "#15803d";
+      status.textContent = "✅ Prompt copied.";
+    }).catch(() => {
+      status.style.color = "red";
+      status.textContent = "❌ Copy failed. Please copy manually.";
+    });
   }
 
-  const encoded = encodeURIComponent(prompt);
-  let url = "https://chatgpt.com/";
-  if (provider === "gemini") url = `https://gemini.google.com/app?prompt=${encoded}`;
-  if (provider === "chatgpt") url = `https://chatgpt.com/?q=${encoded}`;
-  if (provider === "claude") url = "https://claude.ai/new";
+  function openInLLM() {
+    const prompt = document.getElementById("finalPrompt")?.value.trim() || "";
+    const provider = document.getElementById("llmProvider")?.value || "chatgpt";
+    const status = document.getElementById("llmStatus");
 
-  w.location.href = url;
+    if (!status) return;
 
-  navigator.clipboard.writeText(prompt).then(() => {
-    status.style.color = "#15803d";
-    status.textContent = "✅ Opened new tab. Prompt copied — paste if not auto-filled.";
-  }).catch(() => {
-    status.style.color = "#15803d";
-    status.textContent = "✅ Opened new tab. Paste prompt manually if needed.";
-  });
-}
+    if (!prompt) {
+      status.style.color = "red";
+      status.textContent = "❌ Generate a prompt first.";
+      return;
+    }
 
-  let url = "";
-  const encoded = encodeURIComponent(prompt);
+    const w = window.open("about:blank", "_blank");
+    if (!w) {
+      status.style.color = "red";
+      status.textContent = "❌ Popup blocked. Allow popups, then try again.";
+      return;
+    }
 
-  if (provider === "gemini") url = `https://gemini.google.com/app?prompt=${encoded}`;
-  if (provider === "chatgpt") url = `https://chatgpt.com/?q=${encoded}`;
-  if (provider === "claude") url = `https://claude.ai/new`;
+    const encoded = encodeURIComponent(prompt);
+    let url = "https://chatgpt.com/";
+    if (provider === "gemini") url = `https://gemini.google.com/app?prompt=${encoded}`;
+    if (provider === "chatgpt") url = `https://chatgpt.com/?q=${encoded}`;
+    if (provider === "claude") url = "https://claude.ai/new";
 
-  const w = window.open(url, "_blank");
-  if (!w) {
-    status.style.color = "red";
-    status.textContent = "❌ Popup blocked. Allow popups, then try again.";
-    return;
+    w.location.href = url;
+
+    navigator.clipboard.writeText(prompt).then(() => {
+      status.style.color = "#15803d";
+      status.textContent = "✅ Opened new tab. Prompt copied — paste if not auto-filled.";
+    }).catch(() => {
+      status.style.color = "#15803d";
+      status.textContent = "✅ Opened new tab. Paste prompt manually if needed.";
+    });
   }
 
-  status.style.color = "#15803d";
-  status.textContent = provider === "claude"
-    ? "✅ Opened Claude. Paste prompt there."
-    : "✅ Opened in new tab.";
-}
+  function clearLLMForm() {
+    const ids = ["llmInput", "llmContentArea", "llmFocus", "finalPrompt"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
 
-function clearLLMForm() {
-  document.getElementById("llmInput").value = "";
-  document.getElementById("llmContentArea").value = "";
-  document.getElementById("llmFocus").value = "";
-  document.getElementById("finalPrompt").value = "";
-  document.getElementById("llmStatus").textContent = "";
-}
+    const status = document.getElementById("llmStatus");
+    if (status) status.textContent = "";
+  }
 
-function refreshPage() {
-  location.reload();
-}
+  function refreshPage() {
+    location.reload();
+  }
 </script>
+
 
 </body>
 </html>
