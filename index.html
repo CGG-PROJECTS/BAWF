@@ -1,14 +1,23 @@
 <style>
     body { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(to bottom, #fdfdfd, #f8f8f8); color:#111827; }
-    .container { max-width:2800px; margin:42px auto; padding:42px 34px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
-    header { text-align:center; margin-bottom:20px; }
-    h1 { margin:0 0 12px 0; font-size:2.8rem; color:#1d4ed8; font-weight:700; }
-    .tagline { font-size:2.25rem; color:#4b5563; max-width:1500px; margin:0 auto 34px auto; }
+    .container { 
+      max-width:2800px; 
+      margin:30px auto;        /* Reduced top margin */
+      padding:32px 34px;       /* Reduced padding */
+      background:white; 
+      border-radius:16px; 
+      box-shadow:0 10px 30px rgba(0,0,0,0.06); 
+    }
+    
+    header { text-align:center; margin-bottom:16px; }   /* Reduced spacing */
+    h1 { margin:0 0 8px 0; font-size:2.8rem; color:#1d4ed8; font-weight:700; }
+    .tagline { font-size:2.0rem; color:#4b5563; max-width:1500px; margin:0 auto 24px auto; }
+
     .key-btn { display:inline-block; padding:12px 24px; background:#1d4ed8; color:white; font-weight:600; border-radius:8px; cursor:pointer; margin:20px 0; text-align:center; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
     .key-btn:hover { background:#1e40af; }
 
     /* Visual Banner */
-    .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:30px 0 40px 0; }
+    .visual-banner { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:25px 0 30px 0; } /* Reduced spacing */
     .visual-aid {
       width: 250px;
       height: 110px;
@@ -19,55 +28,53 @@
     }
     .visual-aid:hover { transform: scale(1.03); }
 
-    /* === UPDATED INFO CARD - Wider + Bolder Text === */
+    /* === ABOUT THIS DATABASE - Wider + Bigger Text === */
     .info-card {
       background: #f0f4f8;
       border-radius: 12px;
-      padding: 32px 40px;
-      margin: 30px auto;
-      max-width: 1600px;           /* Much wider now */
-      width: 95%;
+      padding: 35px 50px;      /* More internal space */
+      margin: 20px auto;       /* Reduced top/bottom margin */
+      max-width: 1850px;       /* Even wider */
+      width: 96%;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     .info-card h3 { 
       color:#1d4ed8; 
       margin-top:0; 
-      font-size: 1.6rem;
+      font-size: 1.75rem;
       font-weight: 700;
     }
     .info-card ul {
-      font-weight: 600;            /* Bolder text */
-      line-height: 1.75;
-      padding-left: 24px;
+      font-size: 1.08rem;      /* Bigger text */
+      font-weight: 600;        /* Bolder */
+      line-height: 1.85;
+      padding-left: 26px;
     }
     .info-card li {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
-    .tabs { display:flex; justify-content:center; gap:12px; margin:32px 0; flex-wrap:wrap; }
+    .tabs { display:flex; justify-content:center; gap:12px; margin:28px 0 20px 0; flex-wrap:wrap; } /* Reduced margin */
     .tab-btn { padding:12px 28px; font-size:1.1rem; font-weight:600; background:#e5e7eb; color:#374151; border:none; border-radius:8px 8px 0 0; cursor:pointer; }
     .tab-btn.active { background:#1d4ed8; color:white; }
+
     .tab-content { display:none; padding:24px; }
     .tab-content.active { display:block; }
 
+    .loading-note { text-align:center; font-size:1.05rem; color:#6b7280; background:#f0f4f8; padding:14px; border-radius:8px; margin:15px 0; }
+
+    /* Other styles remain the same */
     .download-section { text-align:center; margin:20px 0; }
     .download-btn { display:inline-flex; align-items:center; gap:12px; padding:14px 32px; font-size:1.1rem; font-weight:600; background:#1d4ed8; color:white; text-decoration:none; border-radius:10px; box-shadow:0 4px 12px rgba(29,78,216,0.25); }
     .download-btn:hover { background:#1e40af; transform:translateY(-2px); }
 
     iframe { width:100%; height:85vh; min-height:700px; border:none; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
-    .loading-note { text-align:center; font-size:1.1rem; color:#6b7280; background:#f0f4f8; padding:16px; border-radius:8px; margin:20px 0; }
 
     #wordInput { width: 90%; max-width: 900px; height: 220px; padding: 16px; font-family: ui-monospace, monospace; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 10px; resize: vertical; background: #f9fafb; }
-    #generateBtn { margin-top: 12px; padding: 14px 40px; font-size: 1.05rem; font-weight: 600; background: #1d4ed8; color: white; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(29,78,216,0.25); }
-    #generateBtn:hover { background:#1e40af; }
     #wordCanvas { display: block; margin: 24px auto 0 auto; max-width: 100%; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); background: white; }
 
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); overflow-y:auto; }
     .modal-content { background-color:#fff; margin:40px auto; padding:30px; border-radius:12px; max-width:980px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
-    .modal-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e5e7eb; padding-bottom:15px; margin-bottom:20px; }
-    .modal-header h2 { margin:0; color:#1d4ed8; }
-    .close { font-size:2rem; font-weight:bold; color:#888; cursor:pointer; }
-    .close:hover { color:#111; }
 </style>
 </head>
 <>
