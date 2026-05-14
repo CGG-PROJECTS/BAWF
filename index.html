@@ -701,7 +701,7 @@
       location.reload();
     }
   </script>
- <script type="module">
+<script type="module">
   import * as webllm from "https://esm.run/@mlc-ai/web-llm";
 
   let engine = null;
@@ -715,13 +715,20 @@
   const inputEl = () => document.getElementById("webllmInput");
   const loadBtnEl = () => document.getElementById("loadWebLLMBtn");
 
+  function isChatCapableModelId(id = "") {
+    const s = id.toLowerCase();
+    return !s.includes("embed") && !s.includes("embedding") && !s.includes("rerank");
+  }
+
   function addChat(role, text) {
     const wrap = document.createElement("div");
     wrap.style.margin = "8px 0";
     wrap.innerHTML = `<strong>${role}:</strong> <span></span>`;
-    wrap.querySelector("span").textContent = text;
+    const span = wrap.querySelector("span");
+    span.textContent = text;
     chatEl().appendChild(wrap);
     chatEl().scrollTop = chatEl().scrollHeight;
+    return span; // IMPORTANT: needed for streaming updates
   }
 
   function setStatus(msg, color = "#374151") {
@@ -732,14 +739,7 @@
     }
   }
 
-  // NEW: filter out non-chat models (embeddings/rerank)
-  function isChatCapableModelId(id = "") {
-    const s = id.toLowerCase();
-    return !s.includes("embed") && !s.includes("embedding") && !s.includes("rerank");
-  }
-
   function populateModels() {
-    // CHANGED: only include chat-capable models
     const list = (webllm.prebuiltAppConfig?.model_list || [])
       .filter(m => isChatCapableModelId(m.model_id));
 
@@ -748,12 +748,12 @@
 
     if (!list.length) {
       const opt = document.createElement("option");
-      opt.textContent = "No models available";
+      opt.textContent = "No chat models available";
       select.appendChild(opt);
       return;
     }
 
-    // Sort by size (smallest first) and prioritize fast models
+    // Sort by size (smallest first)
     const sorted = [...list].sort((a, b) => {
       const getSize = m => parseFloat(m.model_id.match(/(\d+\.?\d*)/)?.[1] || 999);
       return getSize(a) - getSize(b);
@@ -762,7 +762,7 @@
     sorted.forEach(model => {
       const opt = document.createElement("option");
       opt.value = model.model_id;
-      const vram = model.vram_required_MB ? ` ~${Math.round(model.vram_required_MB/1024)}GB` : "";
+      const vram = model.vram_required_MB ? ` ~${Math.round(model.vram_required_MB / 1024)}GB` : "";
       opt.textContent = `${model.model_id}${vram}`;
       select.appendChild(opt);
     });
@@ -784,7 +784,6 @@
       return;
     }
 
-    // NEW: guard against non-chat model selection
     if (!isChatCapableModelId(selected)) {
       setStatus("❌ Selected model is not a chat model. Please choose an Instruct/Chat model.", "red");
       return;
@@ -805,7 +804,7 @@
       addChat("System", `Model ready: ${selected}`);
     } catch (err) {
       console.error(err);
-      setStatus("❌ Failed to load model. Try a smaller one.", "red");
+      setStatus(`❌ Failed to load model: ${err?.message || err}`, "red");
     } finally {
       loadBtnEl().disabled = false;
     }
@@ -816,6 +815,7 @@
       setStatus("❌ Load a model first.", "red");
       return;
     }
+
     const userText = inputEl().value.trim();
     if (!userText) return;
 
@@ -834,17 +834,17 @@
       });
 
       for await (const chunk of stream) {
-        const token = chunk.choices?.[0]?.delta?.content || "";
+        const token = chunk?.choices?.[0]?.delta?.content || "";
         acc += token;
         assistantSpan.textContent = acc;
         chatEl().scrollTop = chatEl().scrollHeight;
       }
 
-      messages.push({ role: "assistant", content: acc });
+      messages.push({ role: "assistant", content: acc || "(No output)" });
       setStatus("✅ Response complete.", "#15803d");
     } catch (err) {
-      console.error(err);
-      setStatus("❌ Generation failed.", "red");
+      console.error("WebLLM generation error:", err);
+      setStatus(`❌ Generation failed: ${err?.message || err}`, "red");
     }
   }
 
